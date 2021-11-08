@@ -19,7 +19,7 @@ local packer = require('packer').startup(function()
     use 'Mofiqul/dracula.nvim'
 
     -- tabline
-    use {'romgrk/barbar.nvim', requires = {'kyazdani42/nvim-web-devicons'}}
+    use {'akinsho/bufferline.nvim', requires = 'kyazdani42/nvim-web-devicons'}
 
     -- git integration
     use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'}}
@@ -139,7 +139,7 @@ require('plugin-config/lsp')
 require('plugin-config/neoformat')
 require('plugin-config/nvim-lint')
 require('plugin-config/hop')
-require('plugin-config/barbar')
+require('plugin-config/bufferline')
 require('plugin-config/pydocstring')
 require('plugin-config/nvim-autopairs')
 
