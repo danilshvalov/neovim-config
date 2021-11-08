@@ -1,15 +1,26 @@
 -- Find files using lua fuctions
-local opts = { silent = true, noremap = true }
-vim.api.nvim_set_keymap('n', '<leader>ff', '<Cmd>lua require(\'telescope.builtin\').find_files()<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>fg', '<Cmd>lua require(\'telescope.builtin\').live_grep()<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>fb', '<Cmd>lua require(\'telescope.builtin\').buffers()<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>fh', '<Cmd>lua require(\'telescope.builtin\').help_tags()<CR>', opts)
+local opts = {silent = true, noremap = true}
+vim.api.nvim_set_keymap('n', '<leader>ff',
+                        '<Cmd>lua require(\'telescope.builtin\').find_files()<CR>',
+                        opts)
+vim.api.nvim_set_keymap('n', '<leader>fg',
+                        '<Cmd>lua require(\'telescope.builtin\').live_grep()<CR>',
+                        opts)
+vim.api.nvim_set_keymap('n', '<leader>fb',
+                        '<Cmd>lua require(\'telescope.builtin\').buffers()<CR>',
+                        opts)
+vim.api.nvim_set_keymap('n', '<leader>fh',
+                        '<Cmd>lua require(\'telescope.builtin\').help_tags()<CR>',
+                        opts)
 
 local actions = require('telescope.actions')
 require('telescope').setup {
     defaults = {
         -- program to use for searching with its arguments
-        find_command = {'rg', '--no-heading', '--with-filename', '--line-number', '--column', '--smart-case'},
+        find_command = {
+            'rg', '--no-heading', '--with-filename', '--line-number',
+            '--column', '--smart-case'
+        },
         -- prompt_position = 'top', -- have prompt at the top (has no effect on vertical configuration)
         prompt_prefix = ' ', -- symbol on prompt window
         selection_caret = ' ', -- symbol on selected row in results window
@@ -27,7 +38,6 @@ require('telescope').setup {
         file_sorter = require'telescope.sorters'.get_fuzzy_file,
         file_ignore_patterns = {'node_modules/.*'}, -- never search in node_modules/ dir
         generic_sorter = require'telescope.sorters'.get_generic_fuzzy_sorter,
-        path_display = true,
         winblend = 0, -- window should not be transparent
         border = {}, -- no border?
         borderchars = {'─', '│', '─', '│', '╭', '╮', '╯', '╰'}, -- border chars
@@ -45,20 +55,20 @@ require('telescope').setup {
                 ['<C-l>'] = actions.move_selection_previous,
                 ['<C-q>'] = actions.smart_send_to_qflist + actions.open_qflist,
                 -- ['ć'] = actions.close,
-                ['<CR>'] = actions.select_default + actions.center,
+                ['<CR>'] = actions.select_default + actions.center
             },
             n = {
                 ['<C-k>'] = actions.move_selection_next,
                 ['<C-l>'] = actions.move_selection_previous,
                 ['<C-q>'] = actions.smart_send_to_qflist + actions.open_qflist,
-                ['ć'] = actions.close,
+                ['ć'] = actions.close
             }
         }
     },
     extensions = {
         fzy_native = {
             override_generic_sorter = false,
-            override_file_sorter = true,
+            override_file_sorter = true
         }
     }
 }

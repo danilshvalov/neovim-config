@@ -33,9 +33,6 @@ vim.api.nvim_set_keymap('n', 'L', '9k', opts)
 vim.api.nvim_set_keymap('v', 'K', '9j', opts)
 vim.api.nvim_set_keymap('v', 'L', '9k', opts)
 
--- stay in normal mode after inserting a new line
-vim.api.nvim_set_keymap('', 'o', 'o <Bs><Esc>', opts)
-vim.api.nvim_set_keymap('', 'O', 'O <Bs><Esc>', opts)
 
 -- mapping that opens .vimrc in a new tab for quick editing
 vim.api.nvim_set_keymap('n', '<Leader>ev', '<Cmd>tabe $MYVIMRC<CR>', opts)
@@ -59,6 +56,10 @@ vim.api.nvim_set_keymap('', '<C-w>č', '<C-w>l', opts)
 
 -- opening terminal with shortcut
 vim.api.nvim_set_keymap('', '<Leader>t', '<Cmd>silent !$TERM &<CR>', opts)
+
+-- cd to file directory
+vim.api.nvim_set_keymap('', '<Leader>cd', '<Cmd>cd %:p:h<CR>', opts)
+
 
 -- jumping back and forth
 vim.api.nvim_set_keymap('', '<C-K>', '<C-O>', opts)
