@@ -62,7 +62,10 @@ local packer = require('packer').startup(function()
     -- telescope - searching / navigation
     use {
         'nvim-telescope/telescope.nvim',
-        requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}
+        requires = {
+            {'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'},
+            {'nvim-telescope/telescope-project.nvim'}
+        }
     }
 
     -- better hotfix window (for showing and searching through results in telescope's find usages)
@@ -87,8 +90,8 @@ local packer = require('packer').startup(function()
     -- show indentation levels
     use 'Yggdroot/indentLine'
 
-    -- TODO: integrated lazygit
-    -- https://github.com/kdheepak/lazygit.nvim
+    -- integrated lazygit
+    use 'kdheepak/lazygit.nvim'
 
     use {
         'chipsenkbeil/distant.nvim',
@@ -144,5 +147,6 @@ require('plugin-config/hop')
 require('plugin-config/bufferline')
 require('plugin-config/pydocstring')
 require('plugin-config/nvim-autopairs')
+require('plugin-config/lazygit')
 
 return packer

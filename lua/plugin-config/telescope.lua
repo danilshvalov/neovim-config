@@ -13,8 +13,12 @@ vim.api.nvim_set_keymap('n', '<leader>fh',
                         '<Cmd>lua require(\'telescope.builtin\').help_tags()<CR>',
                         opts)
 
-vim.api.nvim_set_keymap('n', '<leader>o',
+vim.api.nvim_set_keymap('n', '<leader>p',
                         '<Cmd>lua require\'telescope.builtin\'.oldfiles()<CR>',
+                        opts)
+
+vim.api.nvim_set_keymap('n', '<Leader>r',
+                        ":lua require'telescope'.extensions.project.project{}<CR>",
                         opts)
 
 local actions = require('telescope.actions')
@@ -76,3 +80,5 @@ require('telescope').setup {
         }
     }
 }
+
+require('telescope').load_extension('project')
