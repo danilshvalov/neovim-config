@@ -41,14 +41,11 @@ local packer = require('packer').startup(function()
         requires = {'kyazdani42/nvim-web-devicons', opt = true}
     }
 
-    -- show recent files on empty nvim command
-    use 'mhinz/vim-startify'
-
     -- lsp config
     use 'neovim/nvim-lspconfig'
 
     -- for installing LSP servers within nvim
-    use 'kabouzeid/nvim-lspinstall'
+    use 'williamboman/nvim-lsp-installer'
 
     -- neovim cmp
     use 'hrsh7th/cmp-nvim-lsp'
@@ -122,9 +119,14 @@ local packer = require('packer').startup(function()
     -- python docstring
     use 'heavenshell/vim-pydocstring'
 
+    use {
+        'lewis6991/spellsitter.nvim',
+        config = function() require('spellsitter').setup() end
+    }
 end)
 
 -- plugin specific configs go here
+require('plugin-config/lsp-install')
 require('plugin-config/nvim-cmp')
 require('plugin-config/telescope')
 require('plugin-config/nvim-tree')

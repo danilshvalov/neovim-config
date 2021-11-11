@@ -13,6 +13,10 @@ vim.api.nvim_set_keymap('n', '<leader>fh',
                         '<Cmd>lua require(\'telescope.builtin\').help_tags()<CR>',
                         opts)
 
+vim.api.nvim_set_keymap('n', '<leader>o',
+                        '<Cmd>lua require\'telescope.builtin\'.oldfiles()<CR>',
+                        opts)
+
 local actions = require('telescope.actions')
 require('telescope').setup {
     defaults = {

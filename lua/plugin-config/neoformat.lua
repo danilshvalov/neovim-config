@@ -10,9 +10,4 @@ vim.g.neoformat_python_black = {
 vim.g.neoformat_enabled_python = {'autopep8', 'black'}
 
 -- format on save
-vim.api.nvim_command([[
-augroup Format
-autocmd BufWritePre * silent undojoin | Neoformat
-augroup END
-]])
-
+vim.api.nvim_command("autocmd BufWritePre * silent :Neoformat")
