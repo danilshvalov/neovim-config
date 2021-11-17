@@ -30,7 +30,7 @@ require('telescope').setup {
             '--column', '--smart-case'
         },
         -- prompt_position = 'top', -- have prompt at the top (has no effect on vertical configuration)
-        prompt_prefix = ' ', -- symbol on prompt window
+        prompt_prefix = '', -- symbol on prompt window
         selection_caret = ' ', -- symbol on selected row in results window
         entry_prefix = '  ', -- symbol on non-selected rows in results window
         initial_mode = 'insert', -- start in insert mode

@@ -79,7 +79,7 @@ vim.o.mouse = 'nv' -- allow mose in normal & visual mode
 vim.o.completeopt = 'menuone,preview,noinsert'
 
 -- preview menu size
-vim.o.previewheight = 30
+vim.o.pumheight = 15
 
 -- allows hidden buffers
 -- this means that a modified buffer doesn't need to be saved when changing
@@ -103,3 +103,9 @@ vim.o.listchars = 'space:·'
 
 -- colorline
 vim.o.colorcolumn = "79"
+
+-- spelling
+vim.o.spelllang = 'en,ru'
+
+-- cursor highlighting
+vim.o.cursorline = true

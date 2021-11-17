@@ -4,6 +4,6 @@ local opts = {noremap = true, silent = true}
 vim.opt.termguicolors = true
 require("bufferline").setup {}
 
-map('n', '<Leader>b', ':BufferLinePick<CR>', opts)
+map('n', '<A-Tab>', ':BufferLinePick<CR>', opts)
 map('n', '<C-c>', ':BufferLinePickClose<CR>', opts)
 

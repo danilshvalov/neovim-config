@@ -124,8 +124,25 @@ local packer = require('packer').startup(function()
 
     use {
         'lewis6991/spellsitter.nvim',
-        config = function() require('spellsitter').setup() end
+        config = function()
+            require('spellsitter').setup {
+                -- Whether enabled, can be a list of filetypes, e.g. {'python', 'lua'}
+                enable = true,
+
+                -- Highlight to use for bad spellings
+                hl = 'SpellBad',
+
+                -- Spellchecker to use. values:
+                -- * vimfn: built-in spell checker using vim.fn.spellbadword()
+                -- * ffi: built-in spell checker using the FFI to access the
+                --   internal spell_check() function
+                spellchecker = 'ffi'
+            }
+        end
     }
+
+    -- terminal integration
+    use "akinsho/toggleterm.nvim"
 end)
 
 -- plugin specific configs go here
@@ -148,5 +165,6 @@ require('plugin-config/bufferline')
 require('plugin-config/pydocstring')
 require('plugin-config/nvim-autopairs')
 require('plugin-config/lazygit')
+require('plugin-config/toggleterm')
 
 return packer
