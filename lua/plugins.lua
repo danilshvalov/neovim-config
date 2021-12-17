@@ -287,4 +287,5 @@ require("plugin-config/neovide")
 -- require("plugin-config/luasnip")
 vim.cmd("source /Users/danilshvalov/.config/nvim/lua/plugin-config/wilder.vim")
 
+
 return packer

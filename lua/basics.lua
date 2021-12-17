@@ -28,8 +28,8 @@ vim.o.scrolloff = 10 -- start scrolling when 10 lines away from margins
 
 vim.o.termguicolors = true
 vim.o.background = "dark"
--- vim.api.nvim_command("colorscheme dracula")
 vim.api.nvim_command("colorscheme tokyonight")
+-- vim.api.nvim_command("colorscheme dracula")
 -- vim.api.nvim_command("colorscheme onenord")
 
 -- ================= Indentation ================= --

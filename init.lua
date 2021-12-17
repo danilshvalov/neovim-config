@@ -1,6 +1,4 @@
 require("basics")
 require("globals")
+require("plugins")
 require("keymappings")
-if not vim.g.vscode then
-    require("plugins")
-end
