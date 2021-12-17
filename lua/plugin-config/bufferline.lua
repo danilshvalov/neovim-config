@@ -6,4 +6,9 @@ require("bufferline").setup {}
 
 map('n', '<A-Tab>', ':BufferLinePick<CR>', opts)
 map('n', '<C-c>', ':BufferLinePickClose<CR>', opts)
-
+map('n', '<A-Right>', ":BufferLineCycleNext<CR>", opts)
+map('n', '<A-Left>', ":BufferLineCyclePrev<CR>", opts)
+map('n', '<S-A-Right>', ":BufferLineMoveNext<CR>", opts)
+map('n', '<S-A-Left>', ":BufferLineMovePrev<CR>", opts)
+map('n', '<Leader>q', ':bd<CR>', opts)
+map('n', '<Leader>co', [[<Cmd>%bd|e#|bd#<Cr>|'"<Cr>]], opts)

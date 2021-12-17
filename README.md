@@ -1,2 +1,3 @@
 # NEOVIM CONFIG
-WIP
+
+## some

@@ -1,8 +1,11 @@
--- settings for both plugins:
--- 'lukas-reineke/indent-blankline.nvim'
--- 'Yggdroot/indentLine'
+--[[ require("indent_blankline").setup({
+    buftype_exclude = { "terminal" },
+    filetype_exclude = { "alpha" },
+    show_first_indent_level = false,
+    show_current_context = true,
+})
 
-vim.api.nvim_command("let g:indentLine_char = '⎸'")
-vim.api.nvim_command("let g:indentLine_fileTypeExclude = ['text', 'markdown', 'help']")
-vim.api.nvim_command("let g:indentLine_bufNameExclude = ['STARTIFY', 'NVIMTREE']")
-vim.api.nvim_command("let g:indent_blankline_extra_indent_level = -1")
+vim.api.nvim_command("highlight IndentBlanklineContextChar guifg=#bbbbbb") ]]
+
+vim.g.indentLine_char = "│"
+vim.g.indentLine_fileTypeExclude = { "alpha", "NvimTree", "help", "Fm" }

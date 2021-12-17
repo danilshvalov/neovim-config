@@ -1,0 +1,8 @@
+snippet '(\w+)\.len' "len wrap" wrA
+len(`!p snip.rv = match.group(1)`)$0
+endsnippet
+
+snippet '(\w+)\.print' "print wrap" wrA
+print(`!p snip.rv = match.group(1)`)$0
+endsnippet
+

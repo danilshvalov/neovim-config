@@ -1,8 +1,14 @@
-local opts = {silent = true, noremap = true}
-vim.api.nvim_set_keymap('n', '<C-n>', '<Cmd>NvimTreeToggle<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>tr', '<Cmd>NvimTreeRefresh<CR>', opts)
+local opts = { silent = true, noremap = true }
+local map = vim.api.nvim_set_keymap
+
+map("n", "<C-n>", "<Cmd>NvimTreeToggle<CR>", opts)
+map("n", "<C-A-n>", "<Cmd>NvimTreeFindFileToggle<CR>", opts)
+map("n", "<leader>tr", "<Cmd>NvimTreeRefresh<CR>", opts)
+
+-- map('n', 'm', '<Cmd>lua require("nvim-tree.marks").toggle_mark()', opts)
+
 -- find the currently open file in tree
--- vim.api.nvim_set_keymap('n', '<leader>n', '<Cmd>NvimTreeFindFile<CR>', opts)
+-- map('n', '<leader>n', '<Cmd>NvimTreeFindFile<CR>', opts)
 -- local tree_cb = require'nvim-tree.config'.nvim_tree_callback
 -- vim.g.nvim_tree_bindings = {
 --  { key = "<C-t>", cb = tree_cb("tabnew") },
@@ -22,12 +28,43 @@ vim.api.nvim_set_keymap('n', '<leader>tr', '<Cmd>NvimTreeRefresh<CR>', opts)
 --  { key = "q", cb = tree_cb("close") }
 -- }
 -- vim.g.nvim_tree_auto_close = 1 -- close tree when it's the last window
---
+
+--[[ require("nvim-tree.events").on_nvim_tree_ready(function()
+    vim.cmd("NvimTreeRefresh")
+end) ]]
+
 vim.g.nvim_tree_indent_markers = 1
 vim.g.nvim_tree_quit_on_open = 1
 vim.g.nvim_tree_git_hl = 1
+
+vim.g.nvim_tree_show_icons = { folders = 1, folder_arrows = 1, files = 1 }
+
+vim.g.nvim_tree_icons = {
+    default = "",
+    symlink = "",
+    git = {
+        deleted = "",
+        ignored = "◌",
+        renamed = "➜",
+        staged = "✓",
+        unmerged = "",
+        unstaged = "✗",
+        untracked = "★",
+    },
+    folder = {
+        -- disable indent_markers option to get arrows working or if you want both arrows and indent then just add the arrow icons in front            ofthe default and opened folders below!
+        --[[ arrow_open = "",
+        arrow_closed = "", ]]
+        default = "",
+        empty = "", -- 
+        empty_open = "",
+        open = "",
+        symlink = "",
+        symlink_open = "",
+    },
+}
 -- following options are the default
-require'nvim-tree'.setup {
+require("nvim-tree").setup({
     -- disables netrw completely
     disable_netrw = true,
     -- hijack netrw window on startup
@@ -45,7 +82,7 @@ require'nvim-tree'.setup {
         -- enable the feature
         enable = true,
         -- allow to open the tree if it was previously closed
-        auto_open = true
+        auto_open = true,
     },
     -- hijack the cursor in the tree to put it at the start of the filename
     hijack_cursor = false,
@@ -53,8 +90,8 @@ require'nvim-tree'.setup {
     update_cwd = true,
     -- show lsp diagnostics in the signcolumn
     diagnostics = {
-        enable = false,
-        icons = {hint = "", info = "", warning = "", error = ""}
+        enable = true,
+        icons = { hint = "", info = "", warning = "", error = "" },
     },
     -- update the focused file on `BufEnter`, un-collapses the folders recursively until it finds the file
     update_focused_file = {
@@ -65,14 +102,14 @@ require'nvim-tree'.setup {
         update_cwd = false,
         -- list of buffer names / filetypes that will not update the cwd if the file isn't found under the current root directory
         -- only relevant when `update_focused_file.update_cwd` is true and `update_focused_file.enable` is true
-        ignore_list = {}
+        ignore_list = {},
     },
     -- configuration options for the system open command (`s` in the tree by default)
     system_open = {
         -- the command to run this, leaving nil should work in most cases
         cmd = nil,
         -- the command arguments as a list
-        args = {}
+        args = {},
     },
 
     view = {
@@ -80,10 +117,10 @@ require'nvim-tree'.setup {
         width = 30,
         -- height of the window, can be either a number (columns) or a string in `%`, for top or bottom side placement
         height = 30,
-        -- Hide the root path of the current folder on top of the tree 
+        -- Hide the root path of the current folder on top of the tree
         hide_root_folder = false,
         -- side of the tree, can be one of 'left' | 'right' | 'top' | 'bottom'
-        side = 'left',
+        side = "right",
         -- if true the tree will resize itself after opening a file
         auto_resize = false,
         mappings = {
@@ -91,8 +128,12 @@ require'nvim-tree'.setup {
             -- if true, it will only use your list to set the mappings
             custom_only = false,
             -- list of mappings to set on the tree manually
-            list = {}
-        }
-    }
-}
+            list = {},
+        },
+    },
 
+    filters = {
+        dotfiles = false,
+        custom = { "*.class" },
+    },
+})
