@@ -34,17 +34,39 @@ require("formatter").setup({
                 }
             end,
         },
+        cpp = {
+            function()
+                return {
+                    exe = "clang-format",
+                    args = {
+                        "-",
+                    },
+                    stdin = true,
+                }
+            end,
+        },
+        tex = {
+            function()
+                return {
+                    exe = "latexindent",
+                    args = {
+                        "-",
+                    },
+                    stdin = true,
+                }
+            end,
+        },
     },
 })
 
-require('formatter.util').print = function() end
+require("formatter.util").print = function() end
 
--- vim.api.nvim_exec(
---     [[
--- augroup FormatAutogroup
---   autocmd!
---   autocmd BufWritePost *.java,*.lua,*.py FormatWrite
--- augroup END
--- ]],
---     true
--- )
+vim.api.nvim_exec(
+    [[
+augroup FormatAutogroup
+  autocmd!
+  autocmd BufWritePost *.java,*.lua,*.py,*.cpp,*.h,*.tex FormatWrite
+augroup END
+]],
+    true
+)

@@ -30,13 +30,18 @@ cmp.setup({
             i = cmp.mapping.abort(),
             c = cmp.mapping.close(),
         }),
+        -- ["<CR>"] = cmp.mapping.confirm({
+        --     behavior = cmp.ConfirmBehavior.Insert,
+        --     select = false,
+        -- }),
         ["<CR>"] = cmp.mapping.confirm({ select = true }),
-        ["<Tab>"] = cmp.mapping(function(fallback)
-            cmp_ultisnips_mappings.expand_or_jump_forwards(fallback)
-        end, { "i", "s" }),
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
-            cmp_ultisnips_mappings.jump_backwards(fallback)
-        end, { "i", "s" }),
+
+        -- ["<Tab>"] = cmp.mapping(function(fallback)
+        --     cmp_ultisnips_mappings.expand_or_jump_forwards(fallback)
+        -- end, { "i", "s" }),
+        -- ["<S-Tab>"] = cmp.mapping(function(fallback)
+        --     cmp_ultisnips_mappings.jump_backwards(fallback)
+        -- end, { "i", "s" }),
 
         -- ["<Tab>"] = cmp.mapping(function(fallback)
         --     if cmp.visible() then

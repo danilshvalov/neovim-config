@@ -1,8 +1,8 @@
 local map = vim.api.nvim_set_keymap
 local opts = { silent = true, noremap = true }
 
-map("", "<Leader>/", "<Cmd>SearchBoxMatchAll<CR>", opts)
-map("", "<Leader>?", "<Cmd>SearchBoxReplace confirm=menu<CR>", opts)
+map("", "<C-f>", "<Cmd>SearchBoxMatchAll<CR>", opts)
+map("", "<C-A-f>", "<Cmd>SearchBoxReplace confirm=menu<CR>", opts)
 map("", "<Leader>cs", "<Cmd>noh | SearchBoxClear<CR>", opts)
 
 require("searchbox").setup({

@@ -96,7 +96,13 @@ telescope.setup({
     },
 })
 
-local extensions = { "project", "sessions", "packer", "ultisnips", "neoclip" }
+local extensions = {
+    "project",
+    "sessions",
+    "packer",
+    "ultisnips",
+    "neoclip",
+}
 
 for _, ext in pairs(extensions) do
     telescope.load_extension(ext)

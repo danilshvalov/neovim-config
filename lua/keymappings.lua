@@ -49,13 +49,8 @@ map("", "<Leader>cp", "<Cmd>silent !pwd | pbcopy<CR>", opts)
 map("", "<C-K>", "<C-O>", opts)
 map("", "<C-L>", "<C-I>", opts)
 
--- autocomplete
--- if autocomplete popup menu opens pressing enter will complete the first match
--- map('i', '<Tab>', 'v:lua.smart_tab()', {expr = true, noremap = true})
-map("i", "<CR>", 'pumvisible() ? "<C-n><Esc>a" : "<CR>"', { expr = true, noremap = true, silent = true })
-
 -- formatting
-map("n", "<F3>", "<Cmd>Neoformat<CR>", opts)
+map("n", "<F3>", "<Cmd>Format<CR>", opts)
 
 -- tree
 map("n", "<C-n>", "<Cmd>NvimTreeToggle<CR>", opts)

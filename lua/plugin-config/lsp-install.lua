@@ -35,6 +35,33 @@ lsp_installer.on_server_ready(function(server)
     -- end
 
     -- if server.name == "jdtls" then opts.root_dir = util.find_git_ancestor end
+    --
+    if server.name == "texlab" then
+        opts.texlab = {
+            chktex = {
+                onEdit = false,
+                onOpenAndSave = true,
+            },
+            diagnosticsDelay = 300,
+            formatterLineLength = 80,
+            forwardSearch = {
+                args = {},
+            },
+            latexFormatter = "latexindent",
+            latexindent = {
+                modifyLineBreaks = false,
+            },
+        }
+    end
+
+    if server.name == "clangd" then
+        opts.cmd = { "clangd", "--background-index", "--compile-commands-dir", "build" }
+        opts.init_options = {
+            compilationDatabasePath = "build",
+        }
+        opts.root_dir = util.root_pattern("build/compile_commands.json")
+    end
+
     if server.name == "jdtls" then
         opts.root_dir = function(fname)
             for _, patterns in ipairs(root_files) do

@@ -4,9 +4,11 @@ require("nvim-treesitter.configs").setup({
     ignore_install = { "haskell" }, -- broken
     highlight = {
         enable = true,
-        additional_vim_regex_highlighting = true,
+        -- additional_vim_regex_highlighting = true,
     },
-    indent = true,
+    indent = {
+        enable = true,
+    },
     rainbow = {
         colors = {
             "#00a960",
@@ -24,4 +26,5 @@ require("nvim-treesitter.configs").setup({
         -- colors = {}, -- table of hex strings
         -- termcolors = {} -- table of colour name strings
     },
+    autopairs = { enable = true },
 })
