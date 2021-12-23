@@ -3,7 +3,7 @@ local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 map("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
 map("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
-map("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
+-- map("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
 map("n", "gi", "<Cmd>lua vim.lsp.buf.implementation()<CR>", opts)
 map("n", "<C-k>", "<Cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
 map("n", "<Leader>wa", "<Cmd>lua vim.lsp.buf.add_workspace_folder()<CR>", opts)
@@ -17,7 +17,7 @@ map("n", "<Leader>e", "<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>",
 map("n", "[d", "<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts)
 map("n", "]d", "<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
 -- map("n", "<Leader>q", "<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts)
-map("n", ";f", "<Cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+map("n", "\\df", "<Cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -102,6 +102,8 @@ lspconfig.tsserver.setup({
         vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", ":TSLspImportAll<CR>", opts)
     end,
 })
+
+require("lspconfig").taplo.setup({})
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches

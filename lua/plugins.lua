@@ -13,6 +13,15 @@ local packer = require("packer").startup(function()
     -- Packer should manage itself
     use("wbthomason/packer.nvim")
 
+    use("famiu/bufdelete.nvim")
+
+    use({
+        "filipdutescu/renamer.nvim",
+        config = function()
+            require("plugin-config.renamer")
+        end,
+    })
+
     use({
         "VonHeikemen/fine-cmdline.nvim",
         requires = {
@@ -38,8 +47,6 @@ local packer = require("packer").startup(function()
         end,
     })
 
-    use({ "TimUntersberger/neogit", requires = "nvim-lua/plenary.nvim" })
-
     use({
         "mhartington/formatter.nvim",
         config = function()
@@ -47,12 +54,12 @@ local packer = require("packer").startup(function()
         end,
     })
 
-    use({
-        "mfussenegger/nvim-jdtls",
-        config = function()
-            require("plugin-config/jdtls")
-        end,
-    })
+    -- use({
+    --     "mfussenegger/nvim-jdtls",
+    --     config = function()
+    --         require("plugin-config/jdtls")
+    --     end,
+    -- })
 
     use("fedepujol/move.nvim")
 
@@ -64,47 +71,43 @@ local packer = require("packer").startup(function()
         end,
     })
 
-    use("norcalli/nvim-colorizer.lua")
-    use({ "p00f/nvim-ts-rainbow", config = require("colorizer").setup() })
+    -- use("norcalli/nvim-colorizer.lua")
+    -- use({ "p00f/nvim-ts-rainbow", config = require("colorizer").setup() })
 
     use("jose-elias-alvarez/nvim-lsp-ts-utils")
 
-    use({
-        "lervag/vimtex",
-        config = function()
-            require("plugin-config/vimtex")
-        end,
-    })
+    --  use({
+    --       "lervag/vimtex",
+    --       config = function()
+    --           require("plugin-config/vimtex")
+    --       end,
+    --   })
 
-    use("jamestthompson3/nvim-remote-containers")
+    -- use("jamestthompson3/nvim-remote-containers")
 
-    use({ "iamcco/markdown-preview.nvim", run = [[sh -c 'cd app && npm install']] })
-
-    -- use("gelguy/wilder.nvim")
-
-    use({ "ellisonleao/glow.nvim" })
+    -- use({ "iamcco/markdown-preview.nvim", run = [[sh -c 'cd app && npm install']] })
 
     use({ "nvim-lua/plenary.nvim" })
 
-    use({
-        "tanvirtin/vgit.nvim",
-        requires = {
-            "nvim-lua/plenary.nvim",
-        },
-        config = function()
-            require("plugin-config/vgit")
-        end,
-    })
+    -- -- use({
+    -- --     "tanvirtin/vgit.nvim",
+    -- --     requires = {
+    -- --         "nvim-lua/plenary.nvim",
+    -- --     },
+    -- --     config = function()
+    -- --         require("plugin-config/vgit")
+    -- --     end,
+    -- -- })
 
-    -- lua with packer.nvim
-    use({
-        "max397574/better-escape.nvim",
-        config = function()
-            require("better_escape").setup({
-                mapping = { "jj", "jk" },
-            })
-        end,
-    })
+    -- -- lua with packer.nvim
+    -- use({
+    --     "max397574/better-escape.nvim",
+    --     config = function()
+    --         require("better_escape").setup({
+    --             mapping = { "jj", "jk" },
+    --         })
+    --     end,
+    -- })
 
     use({
         "goolord/alpha-nvim",
@@ -136,13 +139,13 @@ local packer = require("packer").startup(function()
     })
 
     -- colorscheme
-    use("shaunsingh/nord.nvim")
-    use("Mofiqul/dracula.nvim")
-    use("catppuccin/nvim")
-    use("projekt0n/github-nvim-theme")
-    use("rmehri01/onenord.nvim")
+    -- use("shaunsingh/nord.nvim")
+    -- use("Mofiqul/dracula.nvim")
+    -- use("catppuccin/nvim")
+    -- use("projekt0n/github-nvim-theme")
+    -- use("rmehri01/onenord.nvim")
     use("folke/tokyonight.nvim")
-    use("andersevenrud/nordic.nvim")
+    -- use("andersevenrud/nordic.nvim")
 
     -- ┌───────────┐
     -- │ INTERFACE │
@@ -195,15 +198,11 @@ local packer = require("packer").startup(function()
     })
 
     use({
-        "nvim-lualine/lualine.nvim",
-        requires = { "kyazdani42/nvim-web-devicons", opt = true },
-    })
-
-    use({
         "famiu/feline.nvim",
         config = function()
             require("plugin-config/feline")
         end,
+        after = "nvim-lspconfig",
     })
 
     -- lsp config
@@ -288,13 +287,12 @@ local packer = require("packer").startup(function()
     -- nvim & icons for nvim
     use({
         "kyazdani42/nvim-tree.lua",
-        branch = "chore/rewrite-renderer",
         config = function()
             require("plugin-config/nvim-tree")
         end,
     })
 
-    -- nice diagnostic pane on the bottom
+    -- -- nice diagnostic pane on the bottom
     use({
         "folke/lsp-trouble.nvim",
         config = function()
@@ -302,22 +300,20 @@ local packer = require("packer").startup(function()
         end,
     })
 
-    use({
-        "mfussenegger/nvim-lint",
-        config = function()
-            require("plugin-config/nvim-lint")
-        end,
-    })
+    -- use({
+    --     "mfussenegger/nvim-lint",
+    --     config = function()
+    --         require("plugin-config/nvim-lint")
+    --     end,
+    -- })
 
     -- python docstring
-    use({
-        "heavenshell/vim-pydocstring",
-        config = function()
-            require("plugin-config/pydocstring")
-        end,
-    })
-
-    -- use("steelsojka/pears.nvim")
+    --    use({
+    --        "heavenshell/vim-pydocstring",
+    --        config = function()
+    --           require("plugin-config/pydocstring")
+    --      end,
+    --  })
 
     -- use({
     --     "lewis6991/spellsitter.nvim",
@@ -354,14 +350,6 @@ local packer = require("packer").startup(function()
         end,
     })
 
-    -- pretty notifications
-    use({
-        "rcarriga/nvim-notify",
-        config = function()
-            require("plugin-config/nvim-notify")
-        end,
-    })
-
     use({
         "Shatur/neovim-session-manager",
         config = function()
@@ -372,6 +360,7 @@ local packer = require("packer").startup(function()
     })
 end)
 
+-- require("plugin-config.neovide")
 -- require("plugin-config/pears")
 -- require("plugin-config/luasnip")
 -- vim.cmd("source /Users/danilshvalov/.config/nvim/lua/plugin-config/wilder.vim")

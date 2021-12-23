@@ -301,10 +301,10 @@ table.insert(components.active[1], comps.git.change)
 table.insert(components.active[1], comps.git.remove)
 -- table.insert(components.inactive[1], comps.vi_mode.left)
 table.insert(components.inactive[1], comps.file.info)
-table.insert(components.active[3], comps.diagnos.err)
-table.insert(components.active[3], comps.diagnos.warn)
-table.insert(components.active[3], comps.diagnos.hint)
-table.insert(components.active[3], comps.diagnos.info)
+-- table.insert(components.active[3], comps.diagnos.err)
+-- table.insert(components.active[3], comps.diagnos.warn)
+-- table.insert(components.active[3], comps.diagnos.hint)
+-- table.insert(components.active[3], comps.diagnos.info)
 -- table.insert(components.active[3], comps.lsp.name)
 table.insert(components.active[3], comps.file.encoding)
 table.insert(components.active[3], comps.file.tab_size)
@@ -336,7 +336,7 @@ table.insert(components.active[2], {
 
 -- require'feline'.setup {}
 require("feline").setup({
-    colors = { bg = colors.bg, fg = colors.fg },
+    theme = { bg = colors.bg, fg = colors.fg },
     components = components,
     vi_mode_colors = vi_mode_colors,
     force_inactive = {

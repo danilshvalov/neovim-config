@@ -3,7 +3,7 @@ local map = vim.api.nvim_set_keymap
 
 map("n", "<C-n>", "<Cmd>NvimTreeToggle<CR>", opts)
 map("n", "<C-A-n>", "<Cmd>NvimTreeFindFileToggle<CR>", opts)
-map("n", "<leader>tr", "<Cmd>NvimTreeRefresh<CR>", opts)
+map("n", "<leader>r", "<Cmd>NvimTreeRefresh<CR>", opts)
 
 -- map('n', 'm', '<Cmd>lua require("nvim-tree.marks").toggle_mark()', opts)
 
@@ -135,5 +135,10 @@ require("nvim-tree").setup({
     filters = {
         dotfiles = false,
         custom = { "*.class" },
+    },
+    git = {
+        enable = true,
+        ignore = false,
+        timeout = 500,
     },
 })

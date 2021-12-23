@@ -20,7 +20,7 @@ local root_files = {
         "pom.xml", -- Maven
         "settings.gradle", -- Gradle
         "settings.gradle.kts", -- Gradle,
-        "HW.iml",
+        "Jabba.iml",
     },
     -- Multi-module projects
     { "build.gradle", "build.gradle.kts" },

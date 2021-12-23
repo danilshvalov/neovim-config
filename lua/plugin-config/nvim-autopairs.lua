@@ -9,6 +9,6 @@ npairs.setup({
     check_ts = true,
     map_c_w = true,
     fast_wrap = {
-        map = "<A-e>",
+        map = "<C-]>",
     },
 })

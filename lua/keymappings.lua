@@ -13,10 +13,10 @@ local map = vim.api.nvim_set_keymap
 -- map('i', '<C-v>', '<Esc>"+pa', opts)
 
 -- fast scrolling
-map("n", "K", "9j", opts)
-map("n", "L", "9k", opts)
-map("v", "K", "9j", opts)
-map("v", "L", "9k", opts)
+map("n", "J", "9j", opts)
+map("n", "K", "9k", opts)
+map("v", "J", "9j", opts)
+map("v", "K", "9k", opts)
 
 -- mapping that opens .vimrc in a new tab for quick editing
 map("n", "<Leader>ev", "<Cmd>tabe $MYVIMRC<CR>", opts)
@@ -25,12 +25,12 @@ map("n", "<Leader>ev", "<Cmd>tabe $MYVIMRC<CR>", opts)
 -- map('n', '<Leader>sv', '<Cmd>lua dofile(vim.fn.stdpath(\'config\')..\'/init.lua\')<CR>', { noremap = true, silent = false })
 
 -- indent via Tab
-map("n", "<Tab>", ">>_", opts)
-map("n", "<S-Tab>", "<<_", opts)
-map("v", "<Tab>", ">>_", opts)
-map("v", "<S-Tab>", "<<_", opts)
-map("i", "<Tab>", "\t", opts)
-map("i", "<S-Tab>", "\b", opts)
+-- map("n", "<Tab>", ">>_", opts)
+-- map("n", "<S-Tab>", "<<_", opts)
+-- map("v", "<Tab>", ">>_", opts)
+-- map("v", "<S-Tab>", "<<_", opts)
+-- map("i", "<Tab>", "\t", opts)
+-- map("i", "<S-Tab>", "\b", opts)
 
 -- window movement
 map("", "<C-w>j", "<C-w>h", opts)

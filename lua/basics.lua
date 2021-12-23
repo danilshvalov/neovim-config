@@ -1,10 +1,10 @@
 -- ################# Basic settings ################ --
 -- ================= File management ================= --
 -- swapfile has global & local config, eventhough help says otherwise
-vim.o.swapfile = false -- can open already open files
-vim.bo.swapfile = false
-vim.o.backup = false
-vim.o.writebackup = false
+-- vim.o.swapfile = false -- can open already open files
+-- vim.bo.swapfile = false
+-- vim.o.backup = false
+-- vim.o.writebackup = false
 vim.o.autoread = true -- auto file change detection
 vim.o.undofile = true
 vim.o.ignorecase = true
@@ -23,6 +23,7 @@ autocmd FileChangedShellPost *
 -- ================= Scrolling ================= --
 
 vim.o.scrolloff = 10 -- start scrolling when 10 lines away from margins
+vim.o.sidescrolloff = 20
 
 -- ================= Visualization ================= --
 
@@ -111,10 +112,17 @@ vim.o.colorcolumn = "79,119"
 -- vim.api.nvim_command("highlight ColorColumn guibg=#8b0000")
 
 -- spelling
-vim.o.spell = true
+vim.o.spell = false
 vim.o.spelllang = "en,ru"
 vim.api.nvim_command("highlight SpellBad gui=underline guifg=#f7768e")
 vim.o.spellcapcheck = ""
 
 -- cursor highlighting
 -- vim.o.cursorline = true
+--
+
+vim.o.langmap =
+    "ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯ;ABCDEFGHIJKLMNOPQRSTUVWXYZ,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz"
+
+vim.api.nvim_command('let &t_Cs = "e[4:3m"')
+vim.api.nvim_command('let &t_Ce = "e[4:0m"')

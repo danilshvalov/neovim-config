@@ -5,7 +5,7 @@ local telescope = require("telescope")
 
 local map = vim.api.nvim_set_keymap
 
-map("n", "<Leader>ff", "<Cmd>Telescope find_files<CR>", opts)
+map("n", "<Leader>ff", "<Cmd>Telescope find_files hidden=true no_ignore=true<CR>", opts)
 map("n", "<Leader>fg", "<Cmd>Telescope live_grep<CR>", opts)
 map("n", "<Leader>fb", "<Cmd>Telescope buffers<CR>", opts)
 map("n", "<Leader>fh", "<Cmd>Telescope help_tags<CR>", opts)
@@ -25,6 +25,9 @@ map("n", "<Leader>fc", "<Cmd>Telescope neoclip<CR>", opts)
 local actions = require("telescope.actions")
 telescope.setup({
     defaults = {
+        find_files = {
+            "no_ignore",
+        },
         -- program to use for searching with its arguments
         find_command = {
             "rg",
