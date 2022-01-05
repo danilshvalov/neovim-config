@@ -1,0 +1,167 @@
+snippet beg "begin{} / end{}" w
+\begin{$1}
+	$0
+\end{$1}
+endsnippet
+
+snippet it
+\item$1 {$2}
+endsnippet
+
+snippet mk "Math" w
+\($1\)
+endsnippet
+
+snippet dm "Math" w
+\[
+	$1
+\]
+endsnippet
+
+snippet -> "to" w
+\to
+endsnippet
+
+snippet <= "leq" w 
+\leq
+endsnippet
+
+snippet >= "geq" w
+\geq
+endsnippet
+
+snippet != "neq" w
+\neq
+endsnippet
+
+snippet inf "infty" w
+\infty
+endsnippet
+
+snippet lim "lim" w
+\lim_{$1}{$2}$0
+endsnippet
+
+snippet sqr "sqrt" w
+\sqrt$1{$2}$0
+endsnippet
+
+snippet fr "frac" w
+\frac{$1}{$2}$0
+endsnippet
+
+snippet dfr "dfrac" w
+\dfrac{$1}{$2}$0
+endsnippet
+
+snippet asi "arcsin" w
+\arcsin{$1}$0
+endsnippet
+
+snippet aco "arccos" w
+\arccos{$1}$0
+endsnippet
+
+snippet atg "arctg" w
+\arctg{$1}$0
+endsnippet
+
+snippet actg "arcctg" w
+\arcctg{$1}$0
+endsnippet
+
+snippet => "implies" w
+\implies
+endsnippet
+
+snippet // "Fraction simple" w
+\frac{$1}{$2}$0
+endsnippet
+
+snippet bf "textbf" w
+\textbf{$1}
+endsnippet
+
+snippet def "definition" w
+\begin{definition}
+	$1
+\end{definition}
+endsnippet
+
+snippet vmat "vmatrix" w
+\begin{vmatrix}
+	$1
+\end{vmatrix}
+endsnippet
+
+snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wr
+\\frac{`!p snip.rv = match.group(1)`}{$1}$0
+endsnippet
+
+snippet vec "vector" w
+\vec{$1}
+endsnippet
+
+snippet * "cdot" w
+\cdot
+endsnippet
+
+snippet \x "times" w
+\\times
+endsnippet
+
+snippet al "alpha" w
+\alpha
+endsnippet
+
+snippet be "beta" w
+\beta
+endsnippet
+
+snippet De "delta" w
+\Delta
+endsnippet
+
+# snippet la "lambda" w
+# \lambda
+# endsnippet
+
+snippet center "center block" w
+\begin{center}
+	$0
+\end{center}
+endsnippet
+
+snippet align "align* block" w
+\begin{align*}
+	$0
+\end{align*}
+endsnippet
+
+snippet gather "gather* block" w
+\begin{gather*}
+	$0
+\end{gather*}
+endsnippet
+
+snippet img "includegraphics" w
+\includegraphics$1{$2}
+endsnippet
+
+snippet ep "varepsilon" w
+\varepsilon
+endsnippet
+
+snippet the "theorem" w
+\begin{theorem}$1
+	$0
+\end{theorem}
+endsnippet
+
+snippet overs "overset" w
+\overset{$1}{$2}
+endsnippet
+
+snippet nei "neighborhood"
+\overset{\circ}{$1}
+endsnippet
