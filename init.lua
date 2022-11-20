@@ -6,23 +6,6 @@ _G.setup = function(name, opts)
   return require(name).setup(opts)
 end
 
-_G.maps = function(mode, lhs, rhs, opts)
-  opts = vim.tbl_deep_extend("force", { silent = true }, opts or {})
-  return vim.keymap.set(mode, lhs, rhs, opts)
-end
-
-_G.autocmd = vim.api.nvim_create_autocmd
-
-_G.hi = function(name, value)
-  return vim.api.nvim_set_hl(0, name, value)
-end
-
-_G.create_cmd = function(name, command, opts)
-  if opts == nil then
-    opts = {}
-  end
-  return vim.api.nvim_create_user_command(name, command, opts)
-end
 -- disable any backup
 vim.o.swapfile = false
 vim.o.backup = false
@@ -459,7 +442,7 @@ use({
       vim.o.showtabline = 1
     end, 0)
 
-    autocmd({
+    kit.autocmd({
       "WinEnter",
       "BufEnter",
       "SessionLoadPost",
@@ -724,7 +707,7 @@ use({
       snipmate_load({ paths = vim.fn.stdpath("config") .. "/snippets" })
     end
 
-    create_cmd("ReloadSnippets", function()
+    kit.create_cmd("ReloadSnippets", function()
       ls.cleanup()
       load_snippets()
     end)
@@ -1019,7 +1002,7 @@ use({
     kit.set_hl("Todo", { fg = "NONE", bg = "NONE" })
   end,
 })
-autocmd("TextYankPost", {
+kit.autocmd("TextYankPost", {
   callback = function()
     vim.highlight.on_yank({
       higroup = "IncSearch",
@@ -1110,8 +1093,7 @@ use({
   },
   after = "nvim-treesitter",
   config = function()
-    maps("n", "<leader>nt", "<Cmd>Neorg tangle current-file<CR>")
-    -- map:new():prefix("<leader>n", "+norg"):
+    map:new():prefix("<leader>n", "+norg"):ft("norg"):set("t", "<Cmd>Neorg tangle current-file<CR>")
 
     setup("neorg", {
       load = {
@@ -1194,17 +1176,9 @@ use({
   end,
 })
 
-maps("", "<C-Right>", "<Cmd>vertical resize -1<CR>")
-maps("", "<C-Left>", "<Cmd>vertical resize +1<CR>")
-maps("", "<C-Up>", "<Cmd>resize +1<CR>")
-maps("", "<C-Down>", "<Cmd>resize -1<CR>")
+map:new():set("<Space>", "<Leader>", { remap = true })
 
-maps("", "<Space>", "<Leader>", {
-  remap = true,
-  silent = true,
-})
-
-maps("n", "<C-g>", "2<C-g>")
+map:new():set("<C-g>", "2<C-g>")
 
 local ts_utils = require("nvim-treesitter.ts_utils")
 
@@ -1238,7 +1212,7 @@ local function insert_item()
   end
 end
 
-maps("i", "<M-CR>", insert_item)
+map:new():mode("i"):set("<M-CR>", insert_item)
 
 use({
   "kylechui/nvim-surround",
@@ -1305,7 +1279,7 @@ use({
     require("mini.align").setup()
     require("mini.bufremove").setup()
 
-    maps("", "ZX", MiniBufremove.delete)
+    map:new():set("ZX", MiniBufremove.delete)
   end,
 })
 

@@ -16,7 +16,7 @@ kit.create_cmd = function(name, command, opts)
 end
 
 kit.call_at_ft = function(ft, callback)
-  autocmd("FileType", {
+  vim.api.nvim_create_autocmd("FileType", {
     pattern = ft,
     callback = callback,
   })
