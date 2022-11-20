@@ -1,0 +1,12 @@
+snippet table
+	table($1) {
+		primary_key(id): UUID
+		--
+		$0
+	}
+
+snippet col
+	column($1): $2
+
+snippet for
+	foreign_key($1): $2
