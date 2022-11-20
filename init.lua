@@ -1385,6 +1385,12 @@ neopack.use({
 neopack.use({
   "folke/tokyonight.nvim",
   config = function()
+    require("tokyonight").setup({
+      style = "night",
+      on_highlights = function(hl, c)
+        hl.WinSeparator.fg = c.yellow
+      end,
+    })
     vim.cmd.colorscheme("tokyonight-night")
   end,
 })
