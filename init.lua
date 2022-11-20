@@ -1544,6 +1544,10 @@ neopack.use({
 kit.autocmd("BufWritePre", {
   group = kit.augroup("Mkdir"),
   callback = function(opts)
+    if vim.bo.filetype == "NeogitCommitMessage" then
+      return
+    end
+
     local path = opts.match
     local dir = vim.fn.fnamemodify(opts.match, ":p:h")
 
