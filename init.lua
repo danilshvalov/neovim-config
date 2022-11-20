@@ -131,18 +131,12 @@ use({
   config = function()
     local lspconfig = require("lspconfig")
     local util = require("lspconfig/util")
-    local sign_define = vim.fn.sign_define
 
-    sign_define("LspDiagnosticsSignError", { text = " ", texthl = "LspDiagnosticsSignError" })
-    sign_define(
-      "LspDiagnosticsSignWarning",
-      { text = " ", texthl = "LspDiagnosticsSignWarning" }
-    )
-    sign_define(
-      "LspDiagnosticsSignInformation",
-      { text = " ", texthl = "LspDiagnosticsSignInformation" }
-    )
-    sign_define("LspDiagnosticsSignHint", { text = " ", texthl = "LspDiagnosticsSignHint" })
+    local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+    for type, icon in pairs(signs) do
+      local hl = "DiagnosticSign" .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+    end
 
     local disable_format = function(client)
       local caps = client.server_capabilities
