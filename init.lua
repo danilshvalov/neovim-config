@@ -1576,4 +1576,4 @@ use({
 
 map:new():ft("help"):set("q", vim.cmd.bd)
 
-vim.o.exrc = true
+vim.o.diffopt = "internal,filler,closeoff,linematch:60,horizontal"
