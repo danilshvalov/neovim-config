@@ -53,63 +53,52 @@ vim.o.cursorline = true
 
 vim.o.cinoptions = vim.o.cinoptions .. "L0"
 
-local disabled_built_ins = {
-  "gzip",
-  "zip",
-  "zipPlugin",
-  "tar",
-  "tarPlugin",
-  "getscript",
-  "getscriptPlugin",
-  "vimball",
-  "vimballPlugin",
-  "2html_plugin",
-  "logipat",
-  "rrhelper",
-  "spellfile_plugin",
-  "matchit",
-}
-
-for _, plugin in pairs(disabled_built_ins) do
-  vim.g["loaded_" .. plugin] = 1
-end
-local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  vim.fn.system({
+if not pcall(require, "packer") then
+  print("Downloading packer.nvim...")
+  print(vim.fn.system({
     "git",
     "clone",
     "--depth",
     "1",
     "https://github.com/wbthomason/packer.nvim",
-    install_path,
-  })
+    vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim",
+  }))
 end
 
 local packer = require("packer")
-packer.init()
-local use = packer.use
 
-use({
+packer.add({
+  "danilshvalov/keymap.nvim",
+})
+
+require("keymap").setup()
+_G.map = require("keymap").map
+map:new():set("<Space>", "<Leader>", { remap = true })
+map:new():set("<C-g>", "2<C-g>")
+map:new():ft("help"):set("q", vim.cmd.bd)
+
+packer.add({
   "wbthomason/packer.nvim",
+  branch = "main",
   config = function()
-    local packer = require("packer")
+    local actions = require("packer.actions")
     map
       :new()
       :prefix("<leader>p", "+packer")
-      :set("d", packer.clean, { desc = "Remove unused packages" })
-      :set("i", packer.install, { desc = "Install packages" })
-      :set("u", packer.update, { desc = "Update packages" })
-      :set("c", packer.compile, { desc = "Update packages" })
+      :set("c", actions.clean, { desc = "Remove unused packages" })
+      :set("i", actions.install, { desc = "Install packages" })
+      :set("u", actions.update, { desc = "Update packages" })
   end,
 })
 
-use({
-  "danilshvalov/keymap.nvim",
+packer.add({
+  "ggandor/leap.nvim",
+  config = function()
+    require("leap").add_default_mappings()
+  end,
 })
-require("keymap").setup()
-_G.map = require("keymap").map
 
-use({
+packer.add({
   "neovim/nvim-lspconfig",
   config = function()
     local lspconfig = require("lspconfig")
@@ -187,43 +176,7 @@ use({
   end,
 })
 
-use({
-  "jose-elias-alvarez/null-ls.nvim",
-  after = "nvim-cmp",
-  requires = { "nvim-lua/plenary.nvim", "lukas-reineke/lsp-format.nvim" },
-  config = function()
-    local null_ls = require("null-ls")
-    local builtins = null_ls.builtins
-    local formatting = builtins.formatting
-
-    local lsp_format = require("lsp-format")
-
-    lsp_format.setup()
-    map:new():set("<leader>tf", vim.cmd.FormatToggle)
-
-    null_ls.setup({
-      default_timeout = 5000,
-      on_attach = lsp_format.on_attach,
-      sources = {
-        builtins.code_actions.gitsigns,
-        formatting.stylua,
-        formatting.markdownlint,
-        formatting.prettier.with({ filetypes = { "java" } }),
-        formatting.prettierd.with({
-          filetypes = { "json", "javascript", "yaml" },
-        }),
-        formatting.clang_format,
-        formatting.black,
-        formatting.latexindent,
-        formatting.taplo,
-        formatting.fnlfmt,
-        formatting.trim_whitespace,
-      },
-    })
-  end,
-})
-
-use({
+packer.add({
   "nvim-telescope/telescope.nvim",
   requires = {
     "nvim-lua/plenary.nvim",
@@ -256,7 +209,7 @@ use({
             height = 0.3,
           },
         },
-        file_ignore_patterns = { "node_modules/*", "%.git/*" },
+        file_ignore_patterns = { "node_modules/*", "%.git/*", "build/*" },
         mappings = {
           i = {
             ["<C-n>"] = actions.cycle_history_next,
@@ -314,7 +267,7 @@ use({
   end,
 })
 
-use({
+packer.add({
   "nvim-treesitter/nvim-treesitter",
   requires = "nvim-treesitter/playground",
   run = ":TSUpdate",
@@ -336,7 +289,7 @@ use({
         "html",
         "latex",
         "norg",
-        "norg_meta",
+        -- "norg_meta",
         "markdown",
       },
       highlight = {
@@ -373,8 +326,192 @@ use({
     })
   end,
 })
-use({
+
+packer.add({
+  "nvim-neorg/neorg",
+  ft = "norg",
+  requires = {
+    "nvim-lua/plenary.nvim",
+    "nvim-treesitter",
+  },
+  after = "nvim-treesitter",
+  config = function()
+    map:new():prefix("<leader>n", "+norg"):ft("norg"):set("t", "<Cmd>Neorg tangle current-file<CR>")
+
+    setup("neorg", {
+      load = {
+        ["core.defaults"] = {},
+        ["core.norg.esupports.indent"] = {
+          ["config"] = {
+            ["indents"] = {
+              ["heading1"] = {
+                indent = 0,
+              },
+              ["heading2"] = {
+                indent = 0,
+              },
+              ["heading3"] = {
+                indent = 0,
+              },
+              ["heading4"] = {
+                indent = 0,
+              },
+              ["heading5"] = {
+                indent = 0,
+              },
+              ["heading6"] = {
+                indent = 0,
+              },
+            },
+            ["modifiers"] = {
+              ["under-headings"] = function()
+                return 0
+              end,
+            },
+          },
+        },
+        ["core.norg.qol.toc"] = {},
+        ["core.norg.dirman"] = {
+          ["config"] = {
+            ["workspaces"] = {
+              defaults = "~/.notes",
+            },
+            autochdir = true,
+            index = "index.norg",
+          },
+        },
+        ["core.gtd.base"] = {
+          ["config"] = {
+            workspace = "defaults",
+          },
+        },
+        ["core.presenter"] = {
+          ["config"] = {
+            zen_mode = "zen-mode",
+          },
+        },
+        ["core.norg.completion"] = {
+          ["config"] = {
+            engine = "nvim-cmp",
+          },
+        },
+        ["core.export"] = {},
+        ["core.export.markdown"] = {
+          ["config"] = {
+            extensions = "all",
+          },
+        },
+      },
+    })
+
+    local function source_norg()
+      local ts = require("nvim-treesitter.ts_utils")
+      local ts_neorg = neorg.modules.get_module("core.integrations.treesitter")
+
+      local node = ts.get_node_at_cursor(0, true)
+      local p = ts_neorg.find_parent(node, "^ranged_tag$")
+
+      local code_block = ts_neorg.get_tag_info(p, true)
+      if not code_block then
+        vim.notify("Not inside a code block!")
+        return
+      end
+
+      if code_block.name == "code" then
+        code_block["parameters"] = vim.split(code_block["parameters"][1], " ")
+        local ft = code_block.parameters[1]
+
+        if ft ~= "lua" then
+          return
+        end
+
+        local content = table.concat(code_block.content, "\n")
+
+        local fn, err = load(content)
+        if fn then
+          fn()
+        else
+          print(err)
+        end
+      end
+    end
+
+    map:new():set("<leader>ne", source_norg)
+  end,
+})
+
+packer.add({
+  "jose-elias-alvarez/null-ls.nvim",
+  after = "nvim-cmp",
+  requires = { "nvim-lua/plenary.nvim", "lukas-reineke/lsp-format.nvim" },
+  config = function()
+    local null_ls = require("null-ls")
+    local builtins = null_ls.builtins
+    local formatting = builtins.formatting
+
+    local lsp_format = require("lsp-format")
+
+    lsp_format.setup()
+    map:new():set("<leader>tf", vim.cmd.FormatToggle)
+
+    null_ls.setup({
+      default_timeout = 5000,
+      on_attach = lsp_format.on_attach,
+      sources = {
+        builtins.code_actions.gitsigns,
+        formatting.stylua,
+        formatting.markdownlint,
+        formatting.prettier.with({ filetypes = { "java" } }),
+        formatting.prettierd.with({
+          filetypes = { "json", "javascript", "yaml" },
+        }),
+        formatting.clang_format,
+        formatting.black,
+        formatting.latexindent,
+        formatting.taplo,
+        formatting.fnlfmt,
+        formatting.trim_whitespace,
+      },
+    })
+  end,
+})
+
+packer.add({
+  "numToStr/Comment.nvim",
+  config = function()
+    setup("Comment", {
+      ignore = "^$",
+      pre_hook = function()
+        local Config = require("Comment.config"):get()
+
+        if vim.bo.filetype == "norg" then
+          Config.padding = false
+          return "+%s+"
+        end
+
+        Config.padding = true
+      end,
+    })
+  end,
+})
+
+packer.add({
+  "folke/tokyonight.nvim",
+  config = function()
+    require("tokyonight").setup({
+      style = "night",
+      on_highlights = function(hl, c)
+        hl.WinSeparator.fg = c.yellow
+        hl.Comment.fg = c.dark5
+      end,
+    })
+    vim.cmd.colorscheme("tokyonight-night")
+  end,
+})
+
+packer.add({
   "nvim-lualine/lualine.nvim",
+  requires = "folke/tokyonight.nvim",
   config = function()
     local lualine = require("lualine")
 
@@ -458,7 +595,8 @@ use({
     })
   end,
 })
-use({
+
+packer.add({
   "danilshvalov/skeletor.nvim",
   cmd = "Skeletor",
   requires = "nvim-lua/plenary.nvim",
@@ -505,6 +643,32 @@ use({
       end,
     })
 
+    skeletor.define_template("cpp-conan", {
+      title = "C++ Conan",
+      substitutions = {
+        ["__PROJECT-NAME__"] = function()
+          return skeletor.read_input("Project name: ")
+        end,
+        ["__CMAKE-VERSION__"] = function()
+          local lines = Job:new({ command = "cmake", args = { "--version" } }):sync()
+          return lines[1]:match("(%d%d?%.%d%d?)")
+        end,
+      },
+      after_creation = function(opts)
+        Job:new({
+          command = "cmake",
+          args = {
+            "-S",
+            opts.cwd,
+            "-B",
+            opts.cwd .. "/build",
+            "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          },
+          cwd = opts.cwd,
+        }):start()
+      end,
+    })
+
     skeletor.define_template("nvim-plugin", {
       title = "Neovim plugin",
       license = "MIT",
@@ -523,7 +687,8 @@ use({
     })
   end,
 })
-use({
+
+packer.add({
   "hrsh7th/nvim-cmp",
   requires = {
     "hrsh7th/cmp-nvim-lsp",
@@ -531,6 +696,7 @@ use({
     "hrsh7th/cmp-path",
     "hrsh7th/cmp-cmdline",
   },
+  after = "luasnip",
   config = function()
     local cmp = require("cmp")
     local luasnip = require("luasnip")
@@ -648,7 +814,7 @@ use({
     })
   end,
 })
-use({
+packer.add({
   "folke/which-key.nvim",
   config = function()
     local wk = require("which-key")
@@ -682,7 +848,7 @@ use({
       :prefix("<leader>d", "+dir")
       :set("c", kit.wrap(vim.cmd.cd, "%:p:h"), { desc = "Set cwd to current file directory" })
       :set("y", function()
-        vim.fn.setreg("+", vim.fn.getcwd())
+        vim.fn.setreg("+", vim.fn.expand("%:p:h"))
       end, { desc = "Yank cwd" })
 
     wk.register({
@@ -696,7 +862,7 @@ use({
     map:new():set("<Esc>", vim.cmd.noh)
   end,
 })
-use({
+packer.add({
   "L3MON4D3/LuaSnip",
   requires = "saadparwaiz1/cmp_luasnip",
   config = function()
@@ -729,7 +895,7 @@ use({
     load_snippets()
   end,
 })
-use({
+packer.add({
   "windwp/nvim-autopairs",
   config = function()
     local npairs = require("nvim-autopairs")
@@ -783,40 +949,20 @@ use({
     end
   end,
 })
-
-use({ "lewis6991/impatient.nvim" })
-
-use({ "dstein64/vim-startuptime" })
-
-vim.o.spell = true
-vim.o.spelllang = "en,ru"
-vim.o.spellcapcheck = ""
-vim.o.spelloptions = "camel"
-vim.o.shiftwidth = 4
-vim.o.tabstop = 4
-vim.o.softtabstop = 4
-vim.o.expandtab = true
-vim.o.smartindent = true
-vim.o.autoindent = true
-vim.o.smarttab = true
-vim.o.ignorecase = true
-vim.o.incsearch = true
-vim.o.smartcase = true
-vim.o.hlsearch = true
-vim.o.scrolloff = 10
-vim.o.sidescrolloff = 20
-vim.o.signcolumn = "yes"
-vim.o.number = true
-vim.o.relativenumber = true
-
-use({
+packer.add({ "lewis6991/impatient.nvim" })
+packer.add({
+  "dstein64/vim-startuptime",
+  config = function()
+    map:new():ft("startuptime"):set("q", vim.cmd.bd)
+  end,
+})
+packer.add({
   "williamboman/mason.nvim",
   config = function()
     setup("mason")
   end,
 })
-
-use({
+packer.add({
   "williamboman/mason-lspconfig.nvim",
   config = function()
     setup("mason-lspconfig", {
@@ -834,26 +980,7 @@ use({
     })
   end,
 })
--- use({
---   "ray-x/lsp_signature.nvim",
---   config = function()
---     setup("lsp_signature", {
---       bind = true,
---       doc_lines = 10,
---       floating_window = true,
---       floating_window_above_cur_line = true,
---       floating_window_off_x = 0,
---       floating_window_off_y = 0,
---       fix_pos = false,
---       hint_enable = false,
---       max_height = 12,
---       max_width = 80,
---       handler_opts = { "border", "rounded" },
---       always_trigger = false,
---     })
---   end,
--- })
-use({
+packer.add({
   "folke/trouble.nvim",
   requires = "kyazdani42/nvim-web-devicons",
   config = function()
@@ -881,8 +1008,7 @@ use({
       :set("i", open("lsp_implementations"), { desc = "Go implementations" })
   end,
 })
-
-use({
+packer.add({
   "lewis6991/gitsigns.nvim",
   requires = "nvim-lua/plenary.nvim",
   config = function()
@@ -961,22 +1087,26 @@ use({
       end, { desc = "Clear hunk preview" })
   end,
 })
-
-use({
+packer.add({
   "akinsho/git-conflict.nvim",
   config = function()
     setup("git-conflict")
   end,
 })
-use({
+packer.add({
+  "folke/neodev.nvim",
+  config = function()
+    require("neodev").setup()
+  end,
+})
+packer.add({
   "windwp/nvim-ts-autotag",
   config = function()
     setup("nvim-ts-autotag")
   end,
 })
-use({ "aklt/plantuml-syntax" })
-
-use({
+packer.add({ "aklt/plantuml-syntax" })
+packer.add({
   "folke/todo-comments.nvim",
   requires = "nvim-lua/plenary.nvim",
   config = function()
@@ -1002,46 +1132,13 @@ use({
     kit.set_hl("Todo", { fg = "NONE", bg = "NONE" })
   end,
 })
-kit.autocmd("TextYankPost", {
-  callback = function()
-    vim.highlight.on_yank({
-      higroup = "IncSearch",
-      timeout = 150,
-    })
-  end,
-})
-use({
+packer.add({
   "NvChad/nvim-colorizer.lua",
   config = function()
     setup("colorizer")
   end,
 })
-use({
-  "folke/zen-mode.nvim",
-  config = function()
-    setup("zen-mode")
-  end,
-})
-
-use({
-  "numToStr/Comment.nvim",
-  config = function()
-    setup("Comment", {
-      ignore = "^$",
-      pre_hook = function()
-        local Config = require("Comment.config"):get()
-
-        if vim.bo.filetype == "norg" then
-          Config.padding = false
-          return "+%s+"
-        end
-
-        Config.padding = true
-      end,
-    })
-  end,
-})
-use({
+packer.add({
   "danymat/neogen",
   requires = "nvim-treesitter/nvim-treesitter",
   config = function()
@@ -1054,7 +1151,7 @@ use({
       :set("g", neogen.generate, { desc = "Generate documentation" })
   end,
 })
-use({
+packer.add({
   "AckslD/nvim-FeMaco.lua",
   config = function()
     local femaco = require("femaco")
@@ -1075,95 +1172,14 @@ use({
     map:new():prefix("<leader>c", "+code"):set("e", edit_code_block, { desc = "Edit code block" })
   end,
 })
-use({
+packer.add({
   "iamcco/markdown-preview.nvim",
   ft = "markdown",
   run = function()
     vim.fn["mkdp#util#install"]()
   end,
 })
-
-use({
-  "nvim-neorg/neorg",
-  ft = "norg",
-  branch = "new-syntax",
-  requires = {
-    "nvim-lua/plenary.nvim",
-    "nvim-treesitter",
-  },
-  after = "nvim-treesitter",
-  config = function()
-    map:new():prefix("<leader>n", "+norg"):ft("norg"):set("t", "<Cmd>Neorg tangle current-file<CR>")
-
-    setup("neorg", {
-      load = {
-        ["core.defaults"] = {},
-        ["core.norg.esupports.indent"] = {
-          ["config"] = {
-            ["indents"] = {
-              ["heading1"] = {
-                indent = 0,
-              },
-              ["heading2"] = {
-                indent = 0,
-              },
-              ["heading3"] = {
-                indent = 0,
-              },
-              ["heading4"] = {
-                indent = 0,
-              },
-              ["heading5"] = {
-                indent = 0,
-              },
-              ["heading6"] = {
-                indent = 0,
-              },
-            },
-            ["modifiers"] = {
-              ["under-headings"] = function()
-                return 0
-              end,
-            },
-          },
-        },
-        ["core.norg.qol.toc"] = {},
-        ["core.norg.dirman"] = {
-          ["config"] = {
-            ["workspaces"] = {
-              defaults = "~/.notes",
-            },
-            autochdir = true,
-            index = "index.norg",
-          },
-        },
-        ["core.gtd.base"] = {
-          ["config"] = {
-            workspace = "defaults",
-          },
-        },
-        ["core.presenter"] = {
-          ["config"] = {
-            zen_mode = "zen-mode",
-          },
-        },
-        ["core.norg.completion"] = {
-          ["config"] = {
-            engine = "nvim-cmp",
-          },
-        },
-        ["core.export"] = {},
-        ["core.export.markdown"] = {
-          ["config"] = {
-            extensions = "all",
-          },
-        },
-      },
-    })
-  end,
-})
-
-use({
+packer.add({
   "akinsho/toggleterm.nvim",
   config = function()
     local toggleterm = require("toggleterm")
@@ -1171,52 +1187,21 @@ use({
       autochdir = true,
     })
 
-    map:new():prefix("<leader>t", "+toggle"):set("t", kit.wrap(toggleterm.toggle, 0))
+    map
+      :new()
+      :prefix("<leader>t", "+toggle")
+      :set("t", function()
+        toggleterm.toggle(vim.v.count, nil, nil, "horizontal")
+      end)
+      :set("T", function()
+        toggleterm.toggle(vim.v.count, nil, nil, "tab")
+      end)
+
     map:new():mode("t"):set("<Esc><Esc>", "<C-\\><C-n>")
   end,
 })
-
-map:new():set("<Space>", "<Leader>", { remap = true })
-
-map:new():set("<C-g>", "2<C-g>")
-
-local ts_utils = require("nvim-treesitter.ts_utils")
-
-local function set_current_line(new_line)
-  vim.fn.setline(".", new_line)
-  local pos = vim.fn.getpos(".")
-  -- the third value is the columns
-  pos[3] = vim.fn.col("$")
-  vim.fn.setpos(".", pos)
-end
-
-local function insert_item()
-  if vim.bo.filetype ~= "tex" then
-    return
-  end
-
-  local node = ts_utils.get_node_at_cursor()
-  while node do
-    if node:type() == "enum_item" or node:type() == "generic_environment" then
-      local cur_line = vim.fn.getline(".")
-      if #cur_line:gsub("^%s*", "", 1) ~= 0 then
-        vim.fn.append(vim.fn.line("."), string.rep(" ", vim.fn.indent(".")))
-        local pos = vim.api.nvim_win_get_cursor(0)
-        vim.api.nvim_win_set_cursor(0, { pos[1] + 1, pos[2] })
-        cur_line = vim.fn.getline(vim.fn.line("."))
-      end
-      set_current_line(cur_line .. "\\item ")
-      break
-    end
-    node = node:parent()
-  end
-end
-
-map:new():mode("i"):set("<M-CR>", insert_item)
-
-use({
+packer.add({
   "kylechui/nvim-surround",
-  tag = "*",
   config = function()
     local get_input = function(prompt, default)
       local ok, result =
@@ -1260,8 +1245,7 @@ use({
     })
   end,
 })
-
-use({
+packer.add({
   "kevinhwang91/nvim-ufo",
   requires = "kevinhwang91/promise-async",
   config = function()
@@ -1272,18 +1256,24 @@ use({
     })
   end,
 })
-
-use({
+packer.add({
   "echasnovski/mini.nvim",
   config = function()
     require("mini.align").setup()
-    require("mini.bufremove").setup()
-
-    map:new():set("ZX", MiniBufremove.delete)
   end,
 })
 
-use({
+packer.add({
+  "famiu/bufdelete.nvim",
+  config = function()
+    local bd = require("bufdelete")
+
+    map:new():set("ZX", kit.wrap(bd.bufdelete, 0))
+    map:new():set("ZC", kit.wrap(bd.bufdelete, 0, true))
+  end,
+})
+
+packer.add({
   "jakewvincent/mkdnflow.nvim",
   rocks = "luautf8",
   ft = "markdown",
@@ -1291,6 +1281,90 @@ use({
     require("mkdnflow").setup({})
   end,
 })
+
+packer.add({
+  "ThePrimeagen/harpoon",
+  requires = "nvim-lua/plenary.nvim",
+  config = function()
+    require("harpoon").setup()
+    require("telescope").load_extension("harpoon")
+
+    map
+      :new()
+      :prefix("<leader>m", "+mark")
+      :set("a", function()
+        require("harpoon.mark").add_file()
+        vim.notify("Mark added")
+      end, { desc = "Add mark" })
+      :set("n", require("harpoon.ui").nav_next, { desc = "Next mark" })
+      :set("p", require("harpoon.ui").nav_prev, { desc = "Previous mark" })
+      :set("f", require("telescope").extensions.harpoon.marks, { desc = "Find mark" })
+  end,
+})
+
+vim.o.spell = true
+vim.o.spelllang = "en,ru"
+vim.o.spellcapcheck = ""
+vim.o.spelloptions = "camel"
+vim.o.shiftwidth = 4
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.expandtab = true
+vim.o.smartindent = true
+vim.o.autoindent = true
+vim.o.smarttab = true
+vim.o.ignorecase = true
+vim.o.incsearch = true
+vim.o.smartcase = true
+vim.o.hlsearch = true
+vim.o.scrolloff = 10
+vim.o.sidescrolloff = 20
+vim.o.signcolumn = "yes"
+vim.o.number = true
+vim.o.relativenumber = true
+
+kit.autocmd("TextYankPost", {
+  callback = function()
+    vim.highlight.on_yank({
+      higroup = "IncSearch",
+      timeout = 150,
+    })
+  end,
+})
+
+local ts_utils = require("nvim-treesitter.ts_utils")
+
+local function set_current_line(new_line)
+  vim.fn.setline(".", new_line)
+  local pos = vim.fn.getpos(".")
+  -- the third value is the columns
+  pos[3] = vim.fn.col("$")
+  vim.fn.setpos(".", pos)
+end
+
+local function insert_item()
+  if vim.bo.filetype ~= "tex" then
+    return
+  end
+
+  local node = ts_utils.get_node_at_cursor()
+  while node do
+    if node:type() == "enum_item" or node:type() == "generic_environment" then
+      local cur_line = vim.fn.getline(".")
+      if #cur_line:gsub("^%s*", "", 1) ~= 0 then
+        vim.fn.append(vim.fn.line("."), string.rep(" ", vim.fn.indent(".")))
+        local pos = vim.api.nvim_win_get_cursor(0)
+        vim.api.nvim_win_set_cursor(0, { pos[1] + 1, pos[2] })
+        cur_line = vim.fn.getline(vim.fn.line("."))
+      end
+      set_current_line(cur_line .. "\\item ")
+      break
+    end
+    node = node:parent()
+  end
+end
+
+map:new():mode("i"):set("<M-CR>", insert_item)
 
 kit.create_cmd("Open", function(opts)
   kit.open_file(string.format('"%s"', vim.fn.expand(opts.args)))
@@ -1334,213 +1408,6 @@ kit.call_at_ft("tex", function()
   vim.o.concealcursor = "ni"
 end)
 
-local function source_norg()
-  local ts = require("nvim-treesitter.ts_utils")
-  local ts_neorg = neorg.modules.get_module("core.integrations.treesitter")
-
-  local node = ts.get_node_at_cursor(0, true)
-  local p = ts_neorg.find_parent(node, "^ranged_tag$")
-
-  local code_block = ts_neorg.get_tag_info(p, true)
-  if not code_block then
-    vim.notify("Not inside a code block!")
-    return
-  end
-
-  if code_block.name == "code" then
-    code_block["parameters"] = vim.split(code_block["parameters"][1], " ")
-    local ft = code_block.parameters[1]
-
-    if ft ~= "lua" then
-      return
-    end
-
-    local content = table.concat(code_block.content, "\n")
-
-    local fn, err = load(content)
-    if fn then
-      fn()
-    else
-      print(err)
-    end
-  end
-end
-
-map:new():set("<leader>ne", source_norg)
-
-local neopack = require("neopack")
-
-neopack.setup({
-  -- handlers = {
-  --   hello = function(pkg)
-  --     print("Hello", pkg.name, pkg.hello)
-  --   end,
-  -- },
-})
-
-neopack.use({
-  "nvim-neopack/neopack.nvim",
-})
-
-neopack.use({
-  "folke/tokyonight.nvim",
-  config = function()
-    require("tokyonight").setup({
-      style = "night",
-      on_highlights = function(hl, c)
-        hl.WinSeparator.fg = c.yellow
-      end,
-    })
-    vim.cmd.colorscheme("tokyonight-night")
-  end,
-})
-
-local lazy_require = function(require_path)
-  return setmetatable({}, {
-    __index = function(_, k)
-      return function(...)
-        return require(require_path)[k](...)
-      end
-    end,
-  })
-end
-
-neopack.use({
-  "TimUntersberger/neogit",
-  keymap = function(map)
-    local neogit = lazy_require("neogit")
-
-    map:new({ prefix = "<leader>g", label = "+git" }):set("g", function()
-      local cwd = vim.fn.expand("%:p:h")
-      if #vim.fs.find(".git/", { upward = true, path = cwd }) > 0 then
-        neogit.open({ cwd = cwd })
-      else
-        vim.notify("Repository not found")
-      end
-    end, { desc = "Open neogit" })
-  end,
-  config = function()
-    local neogit = require("neogit")
-
-    neogit.setup({
-      mappings = {
-        status = {
-          ["P"] = "PullPopup",
-          ["p"] = "PushPopup",
-        },
-      },
-    })
-  end,
-})
-
-neopack.use({
-  "sindrets/diffview.nvim",
-  requires = "toppair/peek.nvim",
-  -- requires = "nvim-lua/plenary.nvim",
-  -- after = "tokyonight.nvim",
-  keymap = function(map)
-    map:new():set("<leader>od", function()
-      local lib = require("diffview.lib")
-
-      local tabpage = vim.api.nvim_get_current_tabpage()
-
-      if #lib.views == 0 then
-        vim.cmd.DiffviewOpen()
-        return
-      end
-
-      local view = lib.views[1]
-
-      if view.tabpage == tabpage then
-        vim.cmd.DiffviewClose()
-      else
-        vim.api.nvim_set_current_tabpage(view.tabpage)
-      end
-    end)
-  end,
-  config = function()
-    local lib = require("diffview.lib")
-    local lazy = require("diffview.lazy")
-    local utils = lazy.require("diffview.utils")
-    local actions = require("diffview.actions")
-
-    local DiffView = lazy.access("diffview.scene.views.diff.diff_view", "DiffView")
-    local FileHistoryView =
-      lazy.access("diffview.scene.views.file_history.file_history_view", "FileHistoryView")
-
-    local function prepare_goto_file()
-      local view = lib.get_current_view()
-
-      if
-        view and not (view:instanceof(DiffView.__get()) or view:instanceof(FileHistoryView.__get()))
-      then
-        return
-      end
-
-      local file = view:infer_cur_file()
-      if file then
-        if not utils.path:readable(file.absolute_path) then
-          utils.err(
-            string.format(
-              "File does not exist on disk: '%s'",
-              utils.path:relative(file.absolute_path, ".")
-            )
-          )
-          return
-        end
-
-        local cursor
-        local cur_file = view.cur_entry
-        if file == cur_file then
-          local win = view.cur_layout:get_main_win()
-          cursor = vim.api.nvim_win_get_cursor(win.id)
-        end
-
-        return file, cursor
-      end
-    end
-
-    local function goto_file()
-      local file, cursor = prepare_goto_file()
-
-      if file then
-        local target_tab = lib.get_prev_non_view_tabpage()
-
-        if target_tab then
-          vim.api.nvim_set_current_tabpage(target_tab)
-          file.layout:restore_winopts()
-          vim.cmd.edit(vim.fn.fnameescape(file.absolute_path))
-        else
-          vim.cmd("tabnew")
-          local temp_bufnr = vim.api.nvim_get_current_buf()
-          file.layout:restore_winopts()
-          vim.cmd("keepalt edit " .. vim.fn.fnameescape(file.absolute_path))
-
-          if temp_bufnr ~= vim.api.nvim_get_current_buf() then
-            vim.api.nvim_buf_delete(temp_bufnr, { force = true })
-          end
-        end
-
-        if cursor then
-          utils.set_cursor(0, unpack(cursor))
-        end
-      end
-    end
-
-    require("diffview").setup({
-      keymaps = {
-        view = {
-          gf = goto_file,
-          q = vim.cmd.DiffviewClose,
-        },
-        file_panel = {
-          q = actions.toggle_files,
-        },
-      },
-    })
-  end,
-})
-
 kit.autocmd("BufWritePre", {
   group = kit.augroup("Mkdir"),
   callback = function(opts)
@@ -1571,13 +1438,6 @@ kit.autocmd("BufWritePre", {
   end,
 })
 
-use({
-  "folke/neodev.nvim",
-  config = function()
-    require("neodev").setup()
-  end,
-})
+vim.o.diffopt = "internal,filler,closeoff,linematch:60,horizontal,foldcolumn:0"
 
-map:new():ft("help"):set("q", vim.cmd.bd)
-
-vim.o.diffopt = "internal,filler,closeoff,linematch:60,horizontal"
+vim.opt.fillchars:append("diff: ")
