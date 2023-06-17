@@ -1,3 +1,9 @@
+if not vim.fs.joinpath then
+  function vim.fs.joinpath(...)
+    return (table.concat({ ... }, "/"):gsub("//+", "/"))
+  end
+end
+
 return {
   {
     "danilshvalov/keymap.nvim",
@@ -779,30 +785,30 @@ return {
       end
     end,
   },
-  {
-    "williamboman/mason.nvim",
-    config = function()
-      setup("mason")
-    end,
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    config = function()
-      setup("mason-lspconfig", {
-        ensure_installed = {
-          "clangd",
-          "jdtls",
-          "rust_analyzer",
-          "lua_ls",
-          "texlab",
-          "pyright",
-          "cmake",
-          "marksman",
-        },
-        automatic_installation = false,
-      })
-    end,
-  },
+  -- {
+  --   "williamboman/mason.nvim",
+  --   config = function()
+  --     setup("mason")
+  --   end,
+  -- },
+  -- {
+  --   "williamboman/mason-lspconfig.nvim",
+  --   config = function()
+  --     setup("mason-lspconfig", {
+  --       ensure_installed = {
+  --         "clangd",
+  --         "jdtls",
+  --         "rust_analyzer",
+  --         "lua_ls",
+  --         "texlab",
+  --         "pyright",
+  --         "cmake",
+  --         "marksman",
+  --       },
+  --       automatic_installation = false,
+  --     })
+  --   end,
+  -- },
   {
     "folke/trouble.nvim",
     dependencies = "nvim-tree/nvim-web-devicons",
