@@ -1,3 +1,4 @@
+-- NOTE: remove after neovim 0.10 release
 if not vim.fs.joinpath then
   function vim.fs.joinpath(...)
     return (table.concat({ ... }, "/"):gsub("//+", "/"))
@@ -223,17 +224,17 @@ return {
       local ext = require("telescope").extensions
       -- local fb_actions = require("telescope").extensions.file_browser.actions
 
-      map
-        :prefix("<leader>f", "+file")
-        :set("f", builtin.find_files, { desc = "Find files" })
-        :set("g", builtin.live_grep, { desc = "Grep files" })
-        :set("r", ext.recent_files.pick, { desc = "Recent files" })
-        -- :set("b", ext.file_browser.file_browser, { desc = "Browse files" })
-        :set(
-          "p",
-          builtin.resume,
-          { desc = "Resume" }
-        )
+      -- map
+      --   :prefix("<leader>f", "+file")
+      --   :set("f", builtin.find_files, { desc = "Find files" })
+      --   :set("g", builtin.live_grep, { desc = "Grep files" })
+      --   :set("r", ext.recent_files.pick, { desc = "Recent files" })
+      --   -- :set("b", ext.file_browser.file_browser, { desc = "Browse files" })
+      --   :set(
+      --     "p",
+      --     builtin.resume,
+      --     { desc = "Resume" }
+      --   )
 
       telescope.setup({
         defaults = require("telescope.themes").get_ivy({
@@ -1174,13 +1175,6 @@ return {
     config = function()
       require("mini.align").setup()
 
-      require("mini.jump").setup({
-        delay = {
-          highlight = 0,
-          idle_stop = 1000,
-        },
-      })
-
       require("mini.comment").setup({
         options = {
           ignore_blank_line = true,
@@ -1288,6 +1282,11 @@ return {
     lazy = false,
     priority = 1000,
     config = function()
+      require("tokyonight").setup({
+        on_highlights = function(highlights, colors)
+          highlights.WinSeparator = { fg = colors.yellow }
+        end,
+      })
       vim.cmd.colorscheme("tokyonight")
     end,
   },
@@ -1360,6 +1359,48 @@ return {
 
       local api = require("nvim-tree.api")
       map:prefix("<leader>t"):set("e", api.tree.toggle)
+    end,
+  },
+  {
+    "ibhagwan/fzf-lua",
+    dependencies = "nvim-tree/nvim-web-devicons",
+    config = function()
+      local fzf = require("fzf-lua")
+
+      fzf.setup({
+        winopts = {
+          height = 0.3,
+          row = vim.o.lines - 14,
+          width = vim.o.columns,
+          border = "none",
+          preview = {
+            hidden = "hidden",
+          },
+        },
+        fzf_colors = {
+          ["fg"] = { "fg", "CursorLine" },
+          ["bg"] = { "bg", "Normal" },
+          ["hl"] = { "fg", "Comment" },
+          ["fg+"] = { "fg", "Normal" },
+          ["bg+"] = { "bg", "Visual" },
+          ["hl+"] = { "fg", "Statement" },
+          ["info"] = { "fg", "PreProc" },
+          ["prompt"] = { "fg", "Conditional" },
+          ["pointer"] = { "fg", "Exception" },
+          ["marker"] = { "fg", "Keyword" },
+          ["spinner"] = { "fg", "Label" },
+          ["header"] = { "fg", "Comment" },
+          ["gutter"] = { "bg", "Normal" },
+        },
+      })
+
+      map:ft("fzf"):set("<Esc>", vim.cmd.quit):set("q", vim.cmd.quit)
+
+      map
+        :prefix("<leader>f", "+file")
+        :set("f", fzf.files, { desc = "Find files" })
+        :set("g", fzf.live_grep, { desc = "Grep files" })
+        :set("r", fzf.oldfiles, { desc = "Recent files" })
     end,
   },
 }

@@ -7,6 +7,7 @@
   "cmp-path": { "branch": "main", "commit": "91ff86cd9c29299a64f968ebb45846c485725f23" },
   "cmp_luasnip": { "branch": "master", "commit": "18095520391186d634a0045dacaa346291096566" },
   "flatten.nvim": { "branch": "main", "commit": "d92c93959e9ac52a00002d6fd64c2d2ca5dd7192" },
+  "fzf-lua": { "branch": "main", "commit": "3c260cce2499abe161e222fa1d69f3a7602a243e" },
   "git-conflict.nvim": { "branch": "main", "commit": "3c89812a83ac749b8851a473863958325a1cd57c" },
   "gitsigns.nvim": { "branch": "main", "commit": "f1c5aa10509e8e109f449499b69567191d25320f" },
   "keymap.nvim": { "branch": "main", "commit": "82f6f76a25f7be91a2b4ff019873ae8ed79c2533" },
@@ -16,8 +17,6 @@
   "lsp-format.nvim": { "branch": "master", "commit": "ca0df5c8544e51517209ea7b86ecc522c98d4f0a" },
   "lualine.nvim": { "branch": "master", "commit": "05d78e9fd0cdfb4545974a5aa14b1be95a86e9c9" },
   "markdown-preview.nvim": { "branch": "master", "commit": "02cc3874738bc0f86e4b91f09b8a0ac88aef8e96" },
-  "mason-lspconfig.nvim": { "branch": "main", "commit": "d381fcb78d7a562c3244e1c8f76406954649db36" },
-  "mason.nvim": { "branch": "main", "commit": "4be1226f48bc2011024110f37b17f5ee468df58f" },
   "mini.nvim": { "branch": "main", "commit": "807b32ed36a6668558c7c1b800ccc23fe273613c" },
   "neodev.nvim": { "branch": "main", "commit": "a53db2efe45ef12d2604f6ac5026d8bbab11a64c" },
   "neogen": { "branch": "main", "commit": "1dd0319ccf41b2498f45a3c7607f2ee325ffc6a0" },
@@ -51,7 +50,6 @@
   "toggleterm.nvim": { "branch": "main", "commit": "cf146a267a6a7db62b1e2aff40414b20081048a1" },
   "tokyonight.nvim": { "branch": "main", "commit": "18259404c962736c70c0f670b71c976c4a5ac2bb" },
   "trouble.nvim": { "branch": "main", "commit": "2af0dd9767526410c88c628f1cbfcb6cf22dd683" },
-  "vim-nix": { "branch": "master", "commit": "7d23e97d13c40fcc6d603b291fe9b6e5f92516ee" },
   "vim-repeat": { "branch": "master", "commit": "24afe922e6a05891756ecf331f39a1f6743d3d5a" },
   "which-key.nvim": { "branch": "main", "commit": "e271c28118998c93a14d189af3395812a1aa646c" }
 }
