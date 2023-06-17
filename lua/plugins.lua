@@ -210,19 +210,13 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope-ui-select.nvim",
-      -- "nvim-telescope/telescope-file-browser.nvim",
       "smartpde/telescope-recent-files",
-      {
-        "nvim-telescope/telescope-fzf-native.nvim",
-        build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
-      },
     },
     config = function()
       local telescope = require("telescope")
       local actions = require("telescope.actions")
       local builtin = require("telescope.builtin")
       local ext = require("telescope").extensions
-      -- local fb_actions = require("telescope").extensions.file_browser.actions
 
       -- map
       --   :prefix("<leader>f", "+file")
@@ -275,31 +269,6 @@ return {
           },
         },
         extensions = {
-          -- file_browser = {
-          --   cwd_to_path = true,
-          --   initial_mode = "normal",
-          --   hijack_netrw = true,
-          --   quiet = true,
-          --   grouped = true,
-          --   hide_parent_dir = true,
-          --   mappings = {
-          --     n = {
-          --       ["-"] = fb_actions.goto_parent_dir,
-          --       C = fb_actions.create,
-          --       D = fb_actions.remove,
-          --       Y = fb_actions.copy,
-          --       R = fb_actions.rename,
-          --       M = fb_actions.move,
-          --       g = fb_actions.goto_parent_dir,
-          --       e = fb_actions.goto_home_dir,
-          --       w = fb_actions.goto_cwd,
-          --       t = fb_actions.change_cwd,
-          --       f = fb_actions.toggle_browser,
-          --       h = fb_actions.toggle_hidden,
-          --       s = fb_actions.toggle_all,
-          --     },
-          --   },
-          -- },
           recent_files = {
             ignore_patterns = {},
           },
@@ -314,9 +283,7 @@ return {
 
       local exts = {
         "ui-select",
-        -- "file_browser",
         "recent_files",
-        "fzf",
       }
 
       for _, ext_name in ipairs(exts) do
