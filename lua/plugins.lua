@@ -1,10 +1,3 @@
--- NOTE: remove after neovim 0.10 release
-if not vim.fs.joinpath then
-  function vim.fs.joinpath(...)
-    return (table.concat({ ... }, "/"):gsub("//+", "/"))
-  end
-end
-
 return {
   {
     "danilshvalov/keymap.nvim",
@@ -12,7 +5,7 @@ return {
     lazy = false,
     init = function()
       map:ft("help"):set("q", vim.cmd.bd)
-      map:set("<Space>", "<Leader>", { remap = true })
+      map:mode("nv"):set("<Space>", "<Leader>", { remap = true })
       map:set("<C-g>", "2<C-g>")
 
       map
@@ -92,6 +85,12 @@ return {
   {
     "ggandor/leap.nvim",
     dependencies = "tpope/vim-repeat",
+    lazy = true,
+    init = function()
+      map:mode("nvo"):set("s", function()
+        require("leap").leap({ target_windows = { vim.fn.win_getid() } })
+      end)
+    end,
     config = function()
       require("leap.util")["get-input"] = function()
         local ok, ch = pcall(vim.fn.getcharstr)
@@ -99,10 +98,6 @@ return {
           return require("langmapper.utils").translate_keycode(ch, "default", "ru")
         end
       end
-
-      map:mode("nvo"):set("s", function()
-        require("leap").leap({ target_windows = { vim.fn.win_getid() } })
-      end)
     end,
   },
   {
@@ -140,8 +135,8 @@ return {
           "clangd",
           "--background-index",
           "--compile-commands-dir=build",
-          "--query-driver=*gcc*",
-          "-j=8",
+          -- "--query-driver=*gcc*",
+          "-j=16",
           "--completion-style=detailed",
           "--clang-tidy",
           "--all-scopes-completion",
@@ -177,6 +172,9 @@ return {
             telemetry = {
               enable = false,
             },
+            hint = {
+              enable = true,
+            },
           },
         },
       })
@@ -206,92 +204,6 @@ return {
     end,
   },
   {
-    "nvim-telescope/telescope.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope-ui-select.nvim",
-      "smartpde/telescope-recent-files",
-    },
-    config = function()
-      local telescope = require("telescope")
-      local actions = require("telescope.actions")
-      local builtin = require("telescope.builtin")
-      local ext = require("telescope").extensions
-
-      -- map
-      --   :prefix("<leader>f", "+file")
-      --   :set("f", builtin.find_files, { desc = "Find files" })
-      --   :set("g", builtin.live_grep, { desc = "Grep files" })
-      --   :set("r", ext.recent_files.pick, { desc = "Recent files" })
-      --   -- :set("b", ext.file_browser.file_browser, { desc = "Browse files" })
-      --   :set(
-      --     "p",
-      --     builtin.resume,
-      --     { desc = "Resume" }
-      --   )
-
-      telescope.setup({
-        defaults = require("telescope.themes").get_ivy({
-          path_display = { truncate = 2 },
-          preview = false,
-          layout_config = {
-            bottom_pane = {
-              height = 0.3,
-            },
-          },
-          file_ignore_patterns = {
-            "node_modules/*",
-            "%.git/*",
-            "^build.*/",
-            "^third_party",
-            "^%.cache/",
-            "%.pgdata/*",
-            "%.ccache/*",
-            ".*%.o$",
-          },
-          mappings = {
-            i = {
-              ["<C-n>"] = actions.cycle_history_next,
-              ["<C-p>"] = actions.cycle_history_prev,
-              ["<C-j>"] = actions.move_selection_next,
-              ["<C-k>"] = actions.move_selection_previous,
-              ["<C-f>"] = actions.to_fuzzy_refine,
-            },
-          },
-        }),
-        pickers = {
-          find_files = {
-            hidden = true,
-            no_ignore = true,
-          },
-          git_status = {
-            use_git_root = false,
-          },
-        },
-        extensions = {
-          recent_files = {
-            ignore_patterns = {},
-          },
-          fzf = {
-            fuzzy = true,
-            override_generic_sorter = true,
-            override_file_sorter = true,
-            case_mode = "smart_case",
-          },
-        },
-      })
-
-      local exts = {
-        "ui-select",
-        "recent_files",
-      }
-
-      for _, ext_name in ipairs(exts) do
-        telescope.load_extension(ext_name)
-      end
-    end,
-  },
-  {
     "nvim-treesitter/nvim-treesitter",
     dependencies = "nvim-treesitter/playground",
     build = ":TSUpdate",
@@ -299,18 +211,18 @@ return {
     config = function()
       local treesitter = require("nvim-treesitter.configs")
 
-      local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-      parser_config.doxygen = {
-        install_info = {
-          url = "~/projects/tree-sitter-doxygen", -- local path or git repo
-          files = { "src/parser.c" }, -- note that some parsers also require src/scanner.c or src/scanner.cc
-          -- optional entries:
-          branch = "main", -- default branch in case of git repo if different from master
-          generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-          requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-        },
-        -- filetype = "doxygen", -- if filetype does not match the parser name
-      }
+      -- local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+      -- parser_config.doxygen = {
+      --   install_info = {
+      --     url = "~/projects/tree-sitter-doxygen", -- local path or git repo
+      --     files = { "src/parser.c" }, -- note that some parsers also require src/scanner.c or src/scanner.cc
+      --     -- optional entries:
+      --     branch = "main", -- default branch in case of git repo if different from master
+      --     generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+      --     requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+      --   },
+      --   -- filetype = "doxygen", -- if filetype does not match the parser name
+      -- }
 
       -- vim.treesitter.language.register("cpp", "doxygen")
 
@@ -337,11 +249,11 @@ return {
         highlight = {
           enable = true,
           disable = { "html" },
-          additional_vim_regex_highlighting = { "org" },
+          additional_vim_regex_highlighting = { "org", "cpp" },
         },
         indent = {
           enable = true,
-          disable = { "python", "cpp", "java" },
+          disable = { "python", "java" },
         },
         autopairs = {
           enable = true,
@@ -452,23 +364,9 @@ return {
         lualine_b = {},
         lualine_c = {
           { "filename", file_status = false, path = 0 },
-          { "branch", icon = "" },
           "diagnostics",
-          function()
-            -- HACK: disable show tabline when count of tabs less then 2
-            vim.o.showtabline = 1
-            return ""
-          end,
         },
-        lualine_x = {
-          {
-            function()
-              return vim.bo.shiftwidth
-            end,
-            icon = "󰌒",
-          },
-          { "filetype" },
-        },
+        lualine_x = {},
         lualine_y = {},
         lualine_z = {
           {
@@ -496,25 +394,29 @@ return {
           lualine_a = { "tabs" },
         },
       })
+
+      vim.o.showtabline = 1
     end,
   },
-  -- {
-  --   "dcampos/nvim-snippy",
-  --   dependencies = "dcampos/cmp-snippy",
-  -- },
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
       "saadparwaiz1/cmp_luasnip",
+      {
+        "tzachar/cmp-fuzzy-path",
+        dependencies = {
+          "tzachar/fuzzy.nvim",
+          { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+        },
+      },
     },
     config = function()
       local cmp = require("cmp")
       local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-      local ls = require("luasnip")
+      local ls = kit.require_on_exported_call("luasnip")
 
       local icons = {
         Text = "",
@@ -596,14 +498,8 @@ return {
             keyword_pattern = [[\k\+]],
           },
         },
-        {
-          name = "path",
-          option = {
-            trigger_characters = { " ", ".", "#", "-" },
-          },
-        },
+        { name = "fuzzy_path", option = { fd_timeout_msec = 50 } },
         "nvim_lsp",
-        -- "nvim_lsp_signature_help",
         "luasnip",
         "orgmode",
       }
@@ -655,7 +551,7 @@ return {
       cmp.setup.cmdline(":", {
         mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
-          { name = "path" },
+          -- { name = "fuzzy_path", option = { fd_timeout_msec = 50 } },
         }, {
           { name = "cmdline" },
         }),
@@ -726,7 +622,7 @@ return {
       end))
 
       npairs.add_rules({
-        Rule("<", ">"):with_pair(cond.before_regex("[%w<]+")):with_move(function(opts)
+        Rule("<", ">"):with_pair(cond.before_regex("%w+")):with_move(function(opts)
           return opts.char == ">"
         end),
       })
@@ -780,6 +676,7 @@ return {
   {
     "folke/trouble.nvim",
     dependencies = "nvim-tree/nvim-web-devicons",
+    lazy = true,
     init = function()
       local trouble = kit.require_on_exported_call("trouble")
 
@@ -839,27 +736,6 @@ return {
         },
       })
 
-      local actions = require("gitsigns.actions")
-      local cache = require("gitsigns.cache").cache
-      local hunks = require("gitsigns.hunks")
-      local manager = require("gitsigns.manager")
-
-      local ns_id = vim.api.nvim_create_namespace("gitsigns_preview_inline")
-
-      actions.preview_hunk_inline = function()
-        local bufnr = vim.api.nvim_get_current_buf()
-
-        local lnum = vim.api.nvim_win_get_cursor(0)[1]
-        local hunk = hunks.find_hunk(lnum, cache[bufnr].hunks)
-
-        if not hunk then
-          return
-        end
-
-        manager.show_added(bufnr, ns_id, hunk)
-        manager.show_deleted(bufnr, ns_id, hunk)
-      end
-
       map
         :new({ prefix = "<leader>g" })
         :set("p", gs.prev_hunk, { desc = "Previous hunk" })
@@ -867,9 +743,6 @@ return {
         :set("r", gs.reset_hunk, { desc = "Reset hunk" })
         :set("s", gs.stage_hunk, { desc = "Stage hunk" })
         :set("h", gs.preview_hunk_inline, { desc = "Preview hunk" })
-        :set("c", function()
-          vim.api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
-        end, { desc = "Clear hunk preview" })
     end,
   },
   {
@@ -966,6 +839,7 @@ return {
   {
     "danymat/neogen",
     dependencies = "nvim-treesitter/nvim-treesitter",
+    lazy = true,
     init = function()
       local neogen = kit.require_on_exported_call("neogen")
 
@@ -1019,6 +893,9 @@ return {
         end,
         ensure_newline = function(base_filetype)
           return base_filetype == "markdown"
+        end,
+        create_tmp_filepath = function(filetype)
+          return "tmp." .. filetype
         end,
       })
 
@@ -1208,15 +1085,28 @@ return {
         org_agenda_skip_deadline_if_done = true,
         org_blank_before_new_entry = { heading = false, plain_list_item = false },
         journal = {
-          directory = "~/org/journal/",
-          file_format = "%Y-%m-%d.org",
-          date = {
-            prefix = "* ",
-            format = "%A %d.%m.%Y\n",
-          },
-          time = {
-            prefix = "** ",
-            format = "%H:%M ",
+          current_journal = "default",
+          journals = {
+            default = {
+              directory = "~/org/journal/",
+              file_format = "%Y.org",
+              date = {
+                prefix = "\n* ",
+                format = "%A, %d.%m.%Y\n",
+              },
+              time = {
+                prefix = "** ",
+                format = "%H:%M ",
+              },
+            },
+            bicycle = {
+              directory = "~/org/",
+              file_format = "bicycle.org",
+              date = {
+                prefix = "* ",
+                format = "%A, %d.%m.%Y\n",
+              },
+            },
           },
         },
         ui = {
@@ -1240,8 +1130,10 @@ return {
       })
 
       -- local Journal = require("orgmode.journal")
-      -- local Journal = require("journal")
-      -- map:prefix("<Leader>o"):set("j", Journal.menu)
+      -- FIXME
+      local opts = require("orgmode.config").opts
+      local Journal = require("journal")
+      map:prefix("<Leader>o"):set("j", Journal.menu)
     end,
   },
   {
@@ -1249,24 +1141,32 @@ return {
     lazy = false,
     priority = 1000,
     config = function()
+      local util = require("tokyonight.util")
+
       require("tokyonight").setup({
+        on_colors = function(colors)
+          colors.comment = util.lighten(colors.comment, 0.85)
+        end,
         on_highlights = function(highlights, colors)
           highlights.WinSeparator = { fg = colors.yellow }
+          highlights["@type.builtin"] = highlights.Type
+          highlights["@lsp.typemod.type.defaultLibrary"] = highlights.Type
+          highlights.doxygenComment = highlights.Comment
+          highlights.doxygenBrief = highlights.Comment
+          highlights.doxygenSpecialOnelineDesc = highlights.Comment
+          highlights.doxygenParam = highlights.Identifier
+          highlights.doxygenSpecial = highlights.Identifier
+          highlights.doxygenParamName = highlights["@parameter"]
+          highlights.Todo = {}
         end,
       })
       vim.cmd.colorscheme("tokyonight")
     end,
   },
   {
-    "johmsalas/text-case.nvim",
-    config = function()
-      require("textcase").setup({})
-      map:set("ga.", "<cmd>TextCaseOpenTelescope<CR>")
-    end,
-  },
-  {
     "L3MON4D3/LuaSnip",
     build = "make install_jsregexp",
+    event = "InsertEnter",
     config = function()
       local ls = require("luasnip")
 
@@ -1281,6 +1181,7 @@ return {
   },
   {
     "danilshvalov/skeletor.nvim",
+    cmd = "Skeletor",
     config = function()
       require("skeletor").setup()
     end,
@@ -1321,28 +1222,82 @@ return {
           indent_markers = {
             enable = true,
           },
+          icons = {
+            show = {
+              file = true,
+              folder = true,
+              folder_arrow = true,
+              git = false,
+              modified = false,
+            },
+          },
+          special_files = { "Cargo.toml", "Makefile", "README.md", "readme.md" },
+          symlink_destination = true,
         },
       })
 
       local api = require("nvim-tree.api")
-      map:prefix("<leader>t"):set("e", api.tree.toggle)
+      map:prefix("<leader>t"):set("e", api.tree.toggle):set("E", function()
+        api.tree.toggle({ path = "." })
+      end)
     end,
   },
   {
     "ibhagwan/fzf-lua",
     dependencies = "nvim-tree/nvim-web-devicons",
+    init = function()
+      local fzf = kit.require_on_exported_call("fzf-lua")
+
+      map:ft("fzf"):set("<Esc>", vim.cmd.quit):set("q", vim.cmd.quit)
+
+      map
+        :prefix("<leader>f", "+find")
+        :set("f", fzf.files, { desc = "Find files" })
+        :set("g", fzf.live_grep, { desc = "Grep files" })
+        :set("r", fzf.oldfiles, { desc = "Recent files" })
+        :set("p", fzf.resume, { desc = "Resume last search" })
+
+      map:mode("i"):set("<C-x><C-f>", fzf.complete_path)
+    end,
     config = function()
       local fzf = require("fzf-lua")
+      local actions = require("fzf-lua.actions")
 
       fzf.setup({
         winopts = {
-          height = 0.3,
-          row = vim.o.lines - 14,
-          width = vim.o.columns,
-          border = "none",
           preview = {
             hidden = "hidden",
           },
+        },
+        winopts_fn = function()
+          return {
+            height = 0.3,
+            row = vim.o.lines - 14,
+            width = vim.o.columns,
+            border = "none",
+          }
+        end,
+        oldfiles = {
+          include_current_session = true,
+        },
+        git = {
+          status = {
+            actions = {
+              ["left"] = false,
+              ["right"] = false,
+              ["ctrl-l"] = { actions.git_unstage, actions.resume },
+              ["ctrl-h"] = { actions.git_stage, actions.resume },
+              ["ctrl-x"] = { actions.git_reset, actions.resume },
+            },
+          },
+        },
+        fzf_opts = {
+          ["--ansi"] = "",
+          ["--info"] = "inline",
+          ["--height"] = "100%",
+          ["--layout"] = "reverse",
+          ["--border"] = "none",
+          ["--cycle"] = "",
         },
         fzf_colors = {
           ["fg"] = { "fg", "CursorLine" },
@@ -1361,13 +1316,47 @@ return {
         },
       })
 
-      map:ft("fzf"):set("<Esc>", vim.cmd.quit):set("q", vim.cmd.quit)
-
+      fzf.register_ui_select()
+    end,
+  },
+  {
+    "smjonas/live-command.nvim",
+    cmd = { "S", "Subvert" },
+    config = function()
+      require("live-command").setup({
+        commands = {
+          S = { cmd = "Subvert" },
+        },
+      })
+    end,
+  },
+  {
+    "tpope/vim-abolish",
+  },
+  {
+    "ojroques/vim-oscyank",
+    config = function()
       map
-        :prefix("<leader>f", "+file")
-        :set("f", fzf.files, { desc = "Find files" })
-        :set("g", fzf.live_grep, { desc = "Grep files" })
-        :set("r", fzf.oldfiles, { desc = "Recent files" })
+        :prefix("<leader>")
+        :set("c", "<Plug>OSCYankOperator")
+        :set("cc", "<leader>c_", { remap = true })
+        :mode("v")
+        :set("c", "<Plug>OSCYankVisual")
+    end,
+  },
+  {
+    "derekwyatt/vim-fswitch",
+    init = function()
+      map:prefix("<leader>f"):set("o", vim.cmd.FSHere)
+    end,
+    config = function()
+      kit.autocmd("BufEnter", {
+        pattern = { "*.h", "*.hpp" },
+        callback = function()
+          vim.b.fswitchdst = "cpp"
+          vim.b.fswitchlocs = "reg:|include.*|src/**|"
+        end,
+      })
     end,
   },
 }

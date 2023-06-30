@@ -13,6 +13,20 @@ return {
   s("in", fmt("#include <{}>", { i(1) })),
   s("inn", fmt('#include "{}"', { i(1) })),
   s("cout", fmt("std::cout << {} << std::endl;", { i(1) })),
+  s("once", t("#pragma once")),
+  s(
+    "ns",
+    fmta(
+      [[
+        namespace <> {
+
+        <>
+
+        } // <>
+      ]],
+      { i(1), i(0), rep(1) }
+    )
+  ),
   s(
     "main",
     fmta(

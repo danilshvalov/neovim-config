@@ -15,6 +15,8 @@ vim.o.autoread = true
 
 vim.o.shell = "/bin/zsh -l"
 
+vim.o.shada = "!,'10000,<50,s10,h"
+
 -- enable undo after closing vim
 vim.o.undofile = true
 
@@ -252,24 +254,3 @@ end
 function _G.make_comment(str)
   return vim.bo.commentstring:gsub("%%s", str)
 end
-
--- vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
---   pattern = { "*.org" },
---   callback = function()
---     _G.toggle_indent(0, vim.fn.line("$") - 1)
---     vim.api.nvim_buf_attach(0, true, {
---       on_lines = function(_, _, _, start_line, old_last_line, new_last_line)
---         vim.schedule(function()
---           _G.toggle_indent(start_line, math.max(old_last_line, new_last_line))
---         end)
---       end,
---     })
---   end,
--- })
-
--- vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI" }, {
---   pattern = { "*.org" },
---   callback = function()
---     _G.toggle_indent(0, vim.fn.line("$") - 1)
---   end,
--- })
