@@ -405,13 +405,6 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-cmdline",
       "saadparwaiz1/cmp_luasnip",
-      {
-        "tzachar/cmp-fuzzy-path",
-        dependencies = {
-          "tzachar/fuzzy.nvim",
-          { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-        },
-      },
     },
     config = function()
       local cmp = require("cmp")
@@ -498,7 +491,6 @@ return {
             keyword_pattern = [[\k\+]],
           },
         },
-        { name = "fuzzy_path", option = { fd_timeout_msec = 50 } },
         "nvim_lsp",
         "luasnip",
         "orgmode",
@@ -551,8 +543,6 @@ return {
       cmp.setup.cmdline(":", {
         mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
-          -- { name = "fuzzy_path", option = { fd_timeout_msec = 50 } },
-        }, {
           { name = "cmdline" },
         }),
       })
