@@ -17,10 +17,10 @@ return {
         vim.wo.wrap = not vim.wo.wrap
       end, { desc = "Toggle wrap" })
 
-      map
-        :new({ mode = "nv", expr = true })
-        :set("k", "(v:count? 'k' : 'gk')")
-        :set("j", "(v:count? 'j' : 'gj')")
+      -- map
+      --   :new({ mode = "nv", expr = true })
+      --   :set("k", "(v:count? 'k' : 'gk')")
+      --   :set("j", "(v:count? 'j' : 'gj')")
 
       map
         :prefix("<leader>o", "+open")
@@ -53,7 +53,7 @@ return {
     "Wansmer/langmapper.nvim",
     lazy = false,
     priority = 10000,
-    config = function()
+    init = function()
       local langmapper = require("langmapper")
       langmapper.setup({
         hack_keymap = true,

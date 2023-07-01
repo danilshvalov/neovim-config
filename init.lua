@@ -20,6 +20,8 @@ vim.o.shada = "!,'10000,<50,s10,h"
 -- enable undo after closing vim
 vim.o.undofile = true
 
+vim.o.smoothscroll = true
+
 vim.o.termguicolors = true
 
 -- enable line to control text width
