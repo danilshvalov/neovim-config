@@ -11,9 +11,10 @@ vim.o.swapfile = false
 vim.o.backup = false
 vim.o.writebackup = false
 
-vim.o.autoread = true
+vim.o.wildignorecase = true
+vim.o.infercase = true
 
-vim.o.shell = "/bin/zsh -l"
+vim.o.autoread = true
 
 vim.o.shada = "!,'10000,<50,s10,h"
 
@@ -25,9 +26,7 @@ vim.o.smoothscroll = true
 vim.o.termguicolors = true
 
 -- enable line to control text width
-vim.o.colorcolumn = "79,119"
-
--- vim.o.textwidth = 79
+vim.o.colorcolumn = "80,120"
 
 -- show tabs
 vim.o.list = true
@@ -35,19 +34,17 @@ vim.opt.listchars = {
   tab = ">-",
 }
 
-vim.o.lazyredraw = false
 -- vim.o.ttimeoutlen = 10
 
-vim.o.wrap = true
+vim.o.wrap = false
 vim.o.breakindent = true
 vim.o.lbr = true
 vim.o.history = 10000
-vim.o.updatetime = 100
+-- vim.o.updatetime = 100
 vim.o.mouse = "nv"
 vim.o.completeopt = "menuone,preview,noinsert"
 
 vim.o.pumheight = 5
-vim.o.hidden = true
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.clipboard = "unnamedplus"
@@ -77,10 +74,7 @@ _G.map = setmetatable({}, {
 })
 
 require("lazy").setup("plugins", {
-  ui = {
-    size = { width = 1, height = 1 },
-  },
-  colorscheme = { "nano-theme" },
+  colorscheme = { "tokyonight" },
   change_detection = {
     notify = false,
   },
@@ -157,7 +151,7 @@ local function insert_item()
   end
 end
 
-map:mode("i"):set("<M-CR>", insert_item)
+map:ft("tex"):mode("i"):set("<A-CR>", insert_item)
 
 kit.create_cmd("Open", function(opts)
   kit.open_file(string.format('"%s"', vim.fn.expand(opts.args)))
@@ -196,63 +190,34 @@ kit.autocmd("TermOpen", {
   end,
 })
 
--- require("langmapper").automapping({ global = true, buffer = true })
-
-local ns_id = vim.api.nvim_create_namespace("orgmode.ui.indent")
-
-local indent_per_level = { 0 }
--- for i = 1, 10 do
---   table.insert(indent_per_level, i * (i + 1) / 2 - 1)
--- end
-
-for i = 1, 10 do
-  -- table.insert(indent_per_level, (i - 1) * 2)
-  -- table.insert(indent_per_level, (i - 1) * 3)
-  table.insert(indent_per_level, i + 1)
-end
-
-function _G.toggle_indent(start_line, end_line)
-  end_line = math.min(end_line, vim.fn.line("$") - 1)
-
-  local old_extmarks = vim.api.nvim_buf_get_extmarks(
-    0,
-    ns_id,
-    { start_line, 0 },
-    { end_line, 0 },
-    { type = "virt_text" }
-  )
-  for _, ext in ipairs(old_extmarks) do
-    vim.api.nvim_buf_del_extmark(0, ns_id, ext[1])
-  end
-
-  for i = start_line, end_line do
-    local headline = require("orgmode.treesitter.headline").from_cursor({ i + 1, 1 })
-    if headline and headline.headline then
-      local ok, level = pcall(headline.level, headline)
-      if ok then
-        local row, _, _ = headline.headline:start()
-
-        local indent
-        if row == i then
-          indent = level - 1
-        else
-          indent = level * 2
-        end
-
-        if indent and indent > 0 then
-          vim.api.nvim_buf_set_extmark(0, ns_id, i, 0, {
-            virt_text = { { string.rep(" ", indent) } },
-            virt_text_pos = "inline",
-            right_gravity = false,
-            virt_text_hide = true,
-            priority = 1,
-          })
-        end
-      end
-    end
-  end
-end
-
 function _G.make_comment(str)
   return vim.bo.commentstring:gsub("%%s", str)
 end
+
+local function uuidgen()
+  return vim.trim(vim.system({ "uuidgen" }, { text = true }):wait().stdout)
+end
+
+local function insert_uuid()
+  local pos = vim.api.nvim_win_get_cursor(0)
+  vim.api.nvim_buf_set_text(0, pos[1] - 1, pos[2] + 1, pos[1] - 1, pos[2] + 1, { uuidgen() })
+end
+
+vim.g.netrw_keepdir = 0
+vim.g.netrw_winsize = 30
+vim.g.netrw_altv = 1
+vim.g.netrw_banner = 0
+
+vim.g.netrw_list_hide = [[^\.\.\=/\=$]]
+
+map:ft("netrw"):set("q", vim.cmd.bdelete, { nowait = true })
+
+map:prefix("<leader>t"):set("e", vim.cmd.Explore):set("E", function()
+  vim.cmd("Lexplore!")
+end)
+
+map:prefix("<leader>i"):set("u", insert_uuid)
+
+kit.call_at_ft({ "markdown", "org" }, function()
+  vim.bo.textwidth = 80
+end)

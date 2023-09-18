@@ -73,6 +73,7 @@ return {
   wrap_with("dm", { "\\[", "\t" }, { "", "\\]" }, true),
   cmd("bf", "textbf"),
   cmd("it", "textit"),
+  cmd("tt", "texttt"),
   cmd("bb", "mathbb"),
   cmd("t", "text"),
   cmd("sec", "section"),
@@ -115,4 +116,5 @@ return {
   text("!=", "\\neq"),
   text("=>", "\\implies"),
   pf_wrap(".bf", "textbf"),
+  pf_wrap(".it", "textit"),
 }

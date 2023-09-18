@@ -1,9 +1,10 @@
 return {
   {
     "danilshvalov/keymap.nvim",
+    dependencies = "Wansmer/langmapper.nvim",
     priority = 1000,
     lazy = false,
-    init = function()
+    config = function()
       map:ft("help"):set("q", vim.cmd.bd)
       map:mode("nv"):set("<Space>", "<Leader>", { remap = true })
       map:set("<C-g>", "2<C-g>")
@@ -14,13 +15,18 @@ return {
         :set("L", "$", { desc = "End of line" })
 
       map:prefix("<leader>t", "+toggle"):set("w", function()
-        vim.wo.wrap = not vim.wo.wrap
+        -- vim.wo.wrap = not vim.wo.wrap
+        if not vim.opt_local.formatoptions:get().a then
+          vim.opt_local.formatoptions:append("a")
+        else
+          vim.opt_local.formatoptions:remove("a")
+        end
       end, { desc = "Toggle wrap" })
 
-      -- map
-      --   :new({ mode = "nv", expr = true })
-      --   :set("k", "(v:count? 'k' : 'gk')")
-      --   :set("j", "(v:count? 'j' : 'gj')")
+      map
+        :new({ mode = "nv", expr = true })
+        :set("k", "(v:count? 'k' : 'gk')")
+        :set("j", "(v:count? 'j' : 'gj')")
 
       map
         :prefix("<leader>o", "+open")
@@ -37,21 +43,7 @@ return {
     end,
   },
   {
-    "willothy/flatten.nvim",
-    lazy = false,
-    priority = 1001,
-    config = function()
-      require("flatten").setup({
-        window = {
-          open = "alternate",
-          focus = "first",
-        },
-      })
-    end,
-  },
-  {
     "Wansmer/langmapper.nvim",
-    lazy = false,
     priority = 10000,
     init = function()
       local langmapper = require("langmapper")
@@ -85,7 +77,6 @@ return {
   {
     "ggandor/leap.nvim",
     dependencies = "tpope/vim-repeat",
-    lazy = true,
     init = function()
       map:mode("nvo"):set("s", function()
         require("leap").leap({ target_windows = { vim.fn.win_getid() } })
@@ -95,14 +86,18 @@ return {
       require("leap.util")["get-input"] = function()
         local ok, ch = pcall(vim.fn.getcharstr)
         if ok and ch ~= vim.api.nvim_replace_termcodes("<esc>", true, false, true) then
-          return require("langmapper.utils").translate_keycode(ch, "default", "ru")
+          if #ch > 1 then
+            return require("langmapper.utils").translate_keycode(ch, "default", "ru")
+          else
+            return ch
+          end
         end
       end
     end,
   },
   {
     "neovim/nvim-lspconfig",
-    dependencies = "mfussenegger/nvim-jdtls",
+    dependencies = { "mfussenegger/nvim-jdtls", "folke/neodev.nvim" },
     config = function()
       local lspconfig = require("lspconfig")
       local util = require("lspconfig/util")
@@ -134,7 +129,7 @@ return {
         cmd = {
           "clangd",
           "--background-index",
-          "--compile-commands-dir=build",
+          "--compile-commands-dir=build_debug",
           -- "--query-driver=*gcc*",
           "-j=16",
           "--completion-style=detailed",
@@ -175,6 +170,12 @@ return {
             hint = {
               enable = true,
             },
+            completion = {
+              callSnippet = "Replace",
+            },
+            workspace = {
+              checkThirdParty = false,
+            },
           },
         },
       })
@@ -205,7 +206,6 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = "nvim-treesitter/playground",
     build = ":TSUpdate",
     event = "BufReadPost",
     config = function()
@@ -215,13 +215,12 @@ return {
       -- parser_config.doxygen = {
       --   install_info = {
       --     url = "~/projects/tree-sitter-doxygen", -- local path or git repo
-      --     files = { "src/parser.c" }, -- note that some parsers also require src/scanner.c or src/scanner.cc
+      --     files = { "src/parser.c", "src/scanner.c" }, -- note that some parsers also require src/scanner.c or src/scanner.cc
       --     -- optional entries:
-      --     branch = "main", -- default branch in case of git repo if different from master
-      --     generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-      --     requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+      --     -- branch = "main", -- default branch in case of git repo if different from master
+      --     -- generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+      --     -- requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
       --   },
-      --   -- filetype = "doxygen", -- if filetype does not match the parser name
       -- }
 
       -- vim.treesitter.language.register("cpp", "doxygen")
@@ -248,34 +247,15 @@ return {
         },
         highlight = {
           enable = true,
-          disable = { "html" },
+          disable = { "yaml" },
           additional_vim_regex_highlighting = { "org", "cpp" },
         },
         indent = {
           enable = true,
-          disable = { "python", "java" },
+          disable = { "python", "java", "yaml", "sql" },
         },
         autopairs = {
           enable = true,
-        },
-
-        playground = {
-          enable = true,
-          disable = {},
-          updatetime = 25,
-          persist_queries = false,
-          keybindings = {
-            toggle_query_editor = "o",
-            toggle_hl_groups = "i",
-            toggle_injected_languages = "t",
-            toggle_anonymous_nodes = "a",
-            toggle_language_display = "I",
-            focus_language = "f",
-            unfocus_language = "F",
-            update = "R",
-            goto_node = "<cr>",
-            show_help = "?",
-          },
         },
       })
     end,
@@ -305,12 +285,13 @@ return {
           formatting.markdownlint,
           formatting.prettier.with({ filetypes = { "java" } }),
           formatting.prettierd.with({
-            filetypes = { "json", "javascript", "markdown" },
+            filetypes = { "json", "javascript", "markdown", "scss", "html" },
           }),
-          formatting.yamlfmt,
           formatting.clang_format,
           formatting.black,
-          formatting.latexindent,
+          formatting.latexindent.with({
+            extra_args = { "-g", "/dev/null" },
+          }),
           formatting.taplo,
           formatting.fnlfmt,
           formatting.csharpier,
@@ -400,6 +381,7 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
+    -- enabled = false,
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
@@ -407,6 +389,8 @@ return {
       "saadparwaiz1/cmp_luasnip",
     },
     config = function()
+      map:mode("i"):set("<C-f>", "<C-x><C-f>"):set("<C-n>", "<C-x><C-n>")
+
       local cmp = require("cmp")
       local cmp_autopairs = require("nvim-autopairs.completion.cmp")
       local ls = kit.require_on_exported_call("luasnip")
@@ -440,7 +424,7 @@ return {
       }
 
       local mappings = {
-        ["<C-n>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+        -- ["<C-n>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
         ["<C-k>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c", "s" }),
         ["<C-j>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c", "s" }),
         ["<C-e>"] = cmp.mapping({
@@ -485,15 +469,15 @@ return {
       }
 
       local sources = {
-        {
-          name = "buffer",
-          option = {
-            keyword_pattern = [[\k\+]],
-          },
-        },
-        "nvim_lsp",
-        "luasnip",
-        "orgmode",
+        -- {
+        --   name = "buffer",
+        --   option = {
+        --     keyword_pattern = [[\k\+]],
+        --   },
+        -- },
+        -- "nvim_lsp",
+        -- "luasnip",
+        -- "orgmode",
       }
 
       local priorities = {}
@@ -530,54 +514,22 @@ return {
 
       cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 
-      cmp.setup.cmdline({ "/", "?" }, {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = {
-          { name = "buffer" },
-        },
-        completion = {
-          keyword_pattern = [[\k\+]],
-        },
-      })
+      -- cmp.setup.cmdline({ "/", "?" }, {
+      --   mapping = cmp.mapping.preset.cmdline(),
+      --   sources = {
+      --     { name = "buffer" },
+      --   },
+      --   completion = {
+      --     keyword_pattern = [[\k\+]],
+      --   },
+      -- })
 
-      cmp.setup.cmdline(":", {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = cmp.config.sources({
-          { name = "cmdline" },
-        }),
-      })
-    end,
-  },
-  {
-    "folke/which-key.nvim",
-    config = function()
-      local lmu = require("langmapper.utils")
-      local view = require("which-key.view")
-      local execute = view.execute
-
-      -- wrap `execute()` and translate sequence back
-      view.execute = function(prefix_i, mode, buf)
-        -- Translate back to English characters
-        local new_prefix_i = lmu.translate_keycode(prefix_i, "default", "ru")
-        if vim.fn.strchars(new_prefix_i) == vim.fn.strchars(prefix_i) then
-          prefix_i = new_prefix_i
-        end
-        execute(prefix_i, mode, buf)
-      end
-
-      local wk = require("which-key")
-
-      wk.setup({
-        plugins = {
-          spelling = {
-            enabled = true,
-            suggestions = 10,
-          },
-        },
-        window = {
-          border = "single",
-        },
-      })
+      -- cmp.setup.cmdline(":", {
+      --   mapping = cmp.mapping.preset.cmdline(),
+      --   sources = cmp.config.sources({
+      --     { name = "cmdline" },
+      --   }),
+      -- })
     end,
   },
   {
@@ -601,11 +553,12 @@ return {
 
       npairs.add_rule(Rule("/*", "*/"))
       npairs.add_rule(Rule('r#"', '"#', "rust"))
-      npairs.add_rule(Rule("\\{", "\\}"))
-      npairs.add_rule(Rule("\\(", "\\)"))
-      npairs.add_rule(Rule("\\[", "\\]"))
 
       npairs.add_rule(Rule('"', "", "tex"))
+
+      npairs.add_rule(Rule("~", "~", "org"):with_move(cond.done))
+
+      npairs.add_rule(Rule("<<", ">>", "tex"))
 
       npairs.add_rule(Rule("{", "};", "cpp"):with_pair(function(opts)
         return opts.line:match("struct%s+") ~= nil or opts.line:match("class%s+") ~= nil
@@ -624,7 +577,7 @@ return {
         { "|", "|" },
       }
 
-      local big_kinds = { "big", "bigg", "Big", "Bigg" }
+      local big_kinds = { "", "big", "bigg", "Big", "Bigg" }
 
       for _, kind in ipairs(big_kinds) do
         for _, pair in pairs(big_pairs) do
@@ -633,36 +586,12 @@ return {
               string.format("\\%s%s", kind, pair[1]),
               string.format("\\%s%s", kind, pair[2]),
               "tex"
-            )
+            ):with_move(cond.done())
           )
         end
       end
     end,
   },
-  -- {
-  --   "williamboman/mason.nvim",
-  --   config = function()
-  --     setup("mason")
-  --   end,
-  -- },
-  -- {
-  --   "williamboman/mason-lspconfig.nvim",
-  --   config = function()
-  --     setup("mason-lspconfig", {
-  --       ensure_installed = {
-  --         "clangd",
-  --         "jdtls",
-  --         "rust_analyzer",
-  --         "lua_ls",
-  --         "texlab",
-  --         "pyright",
-  --         "cmake",
-  --         "marksman",
-  --       },
-  --       automatic_installation = false,
-  --     })
-  --   end,
-  -- },
   {
     "folke/trouble.nvim",
     dependencies = "nvim-tree/nvim-web-devicons",
@@ -738,7 +667,7 @@ return {
   {
     "akinsho/git-conflict.nvim",
     config = function()
-      setup("git-conflict")
+      require("git-conflict").setup()
     end,
   },
   {
@@ -747,7 +676,7 @@ return {
       local builtin = require("statuscol.builtin")
       require("statuscol").setup({
         relculright = true,
-        ft_ignore = { "NvimTree" },
+        ft_ignore = { "NvimTree", "netrw" },
         segments = {
           { text = { builtin.foldfunc } },
           {
@@ -776,16 +705,14 @@ return {
   },
   {
     "folke/neodev.nvim",
-    ft = "lua",
     config = function()
       require("neodev").setup()
     end,
   },
   {
     "windwp/nvim-ts-autotag",
-    ft = { "html", "markdown" },
     config = function()
-      setup("nvim-ts-autotag")
+      require("nvim-ts-autotag").setup()
     end,
   },
   {
@@ -822,6 +749,7 @@ return {
         highlighter = {
           auto_enable = true,
           lsp = true,
+          excludes = { "git" },
         },
       })
     end,
@@ -893,13 +821,6 @@ return {
     end,
   },
   {
-    "iamcco/markdown-preview.nvim",
-    ft = "markdown",
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-  },
-  {
     "akinsho/toggleterm.nvim",
     lazy = true,
     init = function()
@@ -912,7 +833,7 @@ return {
           require("toggleterm").toggle(vim.v.count, nil, nil, "tab")
         end)
 
-      map:mode("t"):set("<Esc><Esc>", "<C-\\><C-n>")
+      map:ft("toggleterm"):mode("t"):set("<Esc><Esc>", "<C-\\><C-n>")
     end,
     config = function()
       local toggleterm = require("toggleterm")
@@ -1065,6 +986,35 @@ return {
 
       local org_dir = vim.fs.normalize("~/org")
 
+      local Files = require("orgmode.parser.files")
+      local config = require("orgmode.config")
+      local ts = require("orgmode.treesitter.compat")
+      local ts_utils = require("nvim-treesitter.ts_utils")
+      local ts_org = require("orgmode.treesitter")
+      local constants = require("orgmode.utils.constants")
+
+      local function set_current_line(new_line)
+        vim.fn.setline(".", new_line)
+        local pos = vim.fn.getpos(".")
+        -- the third value is the columns
+        pos[3] = vim.fn.col("$")
+        vim.fn.setpos(".", pos)
+      end
+
+      map:ft("org"):mode("i"):set("<A-CR>", function()
+        local line = vim.api.nvim_get_current_line()
+        local indent_size = line:match("^%s*"):len()
+        local pos = vim.api.nvim_win_get_cursor(0)
+        vim.api.nvim_buf_set_lines(
+          0,
+          pos[1],
+          pos[1],
+          true,
+          { string.rep(" ", indent_size) .. "- " }
+        )
+        vim.api.nvim_win_set_cursor(0, { pos[1] + 1, pos[2] })
+      end)
+
       require("orgmode").setup_ts_grammar()
       require("orgmode").setup({
         org_agenda_files = vim.fs.joinpath(org_dir, "*"),
@@ -1120,7 +1070,7 @@ return {
       })
 
       -- local Journal = require("orgmode.journal")
-      -- FIXME
+      -- FIXME:
       local opts = require("orgmode.config").opts
       local Journal = require("journal")
       map:prefix("<Leader>o"):set("j", Journal.menu)
@@ -1134,6 +1084,10 @@ return {
       local util = require("tokyonight.util")
 
       require("tokyonight").setup({
+        styles = {
+          comments = { italic = false },
+          keywords = { italic = false },
+        },
         on_colors = function(colors)
           colors.comment = util.lighten(colors.comment, 0.85)
         end,
@@ -1146,8 +1100,17 @@ return {
           highlights.doxygenSpecialOnelineDesc = highlights.Comment
           highlights.doxygenParam = highlights.Identifier
           highlights.doxygenSpecial = highlights.Identifier
+          highlights.SpecialChar = highlights.Identifier
           highlights.doxygenParamName = highlights["@parameter"]
           highlights.Todo = {}
+          highlights.DiagnosticUnderlineError.fg = colors.error
+          highlights.DiagnosticUnderlineWarn.fg = colors.warning
+          highlights.DiagnosticUnderlineInfo.fg = colors.info
+          highlights.diffAdded = highlights.DiffAdd
+          highlights.diffChanged = highlights.DiffChange
+          highlights.diffRemoved = highlights.DiffDelete
+          highlights.Identifier = highlights["@field"]
+          highlights.yamlPlainScalar = highlights.String
         end,
       })
       vim.cmd.colorscheme("tokyonight")
@@ -1197,48 +1160,49 @@ return {
         :set("<C-a>l", tmux.move_right)
     end,
   },
-  {
-    "nvim-tree/nvim-tree.lua",
-    version = "*",
-    dependencies = "nvim-tree/nvim-web-devicons",
-    config = function()
-      require("nvim-tree").setup({
-        view = {
-          width = "25%",
-          side = "right",
-          signcolumn = "yes",
-        },
-        renderer = {
-          indent_markers = {
-            enable = true,
-          },
-          icons = {
-            show = {
-              file = true,
-              folder = true,
-              folder_arrow = true,
-              git = false,
-              modified = false,
-            },
-          },
-          special_files = { "Cargo.toml", "Makefile", "README.md", "readme.md" },
-          symlink_destination = true,
-        },
-      })
+  -- {
+  --   "nvim-tree/nvim-tree.lua",
+  --   version = "*",
+  --   dependencies = "nvim-tree/nvim-web-devicons",
+  --   config = function()
+  --     require("nvim-tree").setup({
+  --       view = {
+  --         width = "25%",
+  --         side = "right",
+  --         signcolumn = "yes",
+  --       },
+  --       renderer = {
+  --         indent_markers = {
+  --           enable = true,
+  --         },
+  --         icons = {
+  --           show = {
+  --             file = true,
+  --             folder = true,
+  --             folder_arrow = true,
+  --             git = false,
+  --             modified = false,
+  --           },
+  --         },
+  --         special_files = { "Cargo.toml", "Makefile", "README.md", "readme.md" },
+  --         symlink_destination = true,
+  --       },
+  --     })
 
-      local api = require("nvim-tree.api")
-      map:prefix("<leader>t"):set("e", api.tree.toggle):set("E", function()
-        api.tree.toggle({ path = "." })
-      end)
-    end,
-  },
+  --     local api = require("nvim-tree.api")
+  --     map:prefix("<leader>t"):set("e", api.tree.toggle):set("E", function()
+  --       api.tree.toggle({ path = "." })
+  --     end)
+  --   end,
+  -- },
   {
     "ibhagwan/fzf-lua",
     dependencies = "nvim-tree/nvim-web-devicons",
+    lazy = false,
     init = function()
       local fzf = kit.require_on_exported_call("fzf-lua")
 
-      map:ft("fzf"):set("<Esc>", vim.cmd.quit):set("q", vim.cmd.quit)
+      map:mode("t"):ft("fzf"):set("<Esc>", vim.cmd.quit)
 
       map
         :prefix("<leader>f", "+find")
@@ -1247,10 +1211,12 @@ return {
         :set("r", fzf.oldfiles, { desc = "Recent files" })
         :set("p", fzf.resume, { desc = "Resume last search" })
 
-      map:mode("i"):set("<C-x><C-f>", fzf.complete_path)
+      -- map:mode("i"):set("<C-x><C-f>", fzf.complete_path)
     end,
     config = function()
       local fzf = require("fzf-lua")
+      fzf.register_ui_select()
+
       local actions = require("fzf-lua.actions")
 
       fzf.setup({
@@ -1288,14 +1254,15 @@ return {
           ["--layout"] = "reverse",
           ["--border"] = "none",
           ["--cycle"] = "",
+          ["--history"] = vim.fn.stdpath("data") .. "/fzf-lua-history",
         },
         fzf_colors = {
           ["fg"] = { "fg", "CursorLine" },
           ["bg"] = { "bg", "Normal" },
-          ["hl"] = { "fg", "Comment" },
+          ["hl"] = { "bg", "IncSearch" },
           ["fg+"] = { "fg", "Normal" },
           ["bg+"] = { "bg", "Visual" },
-          ["hl+"] = { "fg", "Statement" },
+          ["hl+"] = { "bg", "IncSearch" },
           ["info"] = { "fg", "PreProc" },
           ["prompt"] = { "fg", "Conditional" },
           ["pointer"] = { "fg", "Exception" },
@@ -1305,23 +1272,7 @@ return {
           ["gutter"] = { "bg", "Normal" },
         },
       })
-
-      fzf.register_ui_select()
     end,
-  },
-  {
-    "smjonas/live-command.nvim",
-    cmd = { "S", "Subvert" },
-    config = function()
-      require("live-command").setup({
-        commands = {
-          S = { cmd = "Subvert" },
-        },
-      })
-    end,
-  },
-  {
-    "tpope/vim-abolish",
   },
   {
     "ojroques/vim-oscyank",
@@ -1347,6 +1298,202 @@ return {
           vim.b.fswitchlocs = "reg:|include.*|src/**|"
         end,
       })
+    end,
+  },
+  {
+    "jakewvincent/mkdnflow.nvim",
+    ft = "markdown",
+    config = function()
+      require("mkdnflow").setup({
+        to_do = {
+          symbols = { " ", "-", "x" },
+        },
+      })
+    end,
+  },
+  {
+    "theHamsta/nvim_rocks",
+    build = "pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua",
+    init = function()
+      local rocks = require("nvim_rocks")
+      rocks.ensure_installed("luautf8")
+    end,
+  },
+  {
+    "starwing/luautf8",
+    dependencies = "theHamsta/nvim_rocks",
+    config = function()
+      _G.utf8 = require("lua-utf8")
+    end,
+  },
+  {
+    "danilshvalov/text-case.nvim",
+    branch = "feat-unicode",
+    config = function()
+      require("textcase").setup({
+        prefix = "cr",
+      })
+    end,
+  },
+  {
+    "chomosuke/term-edit.nvim",
+    config = function()
+      require("term-edit").setup({
+        prompt_end = "> ",
+      })
+    end,
+  },
+  -- {
+  --   "epwalsh/obsidian.nvim",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "ibhagwan/fzf-lua",
+  --   },
+  --   config = function()
+  --     local function new_note()
+  --       vim.ui.input({ prompt = "Enter note title: " }, function(result)
+  --         if result then
+  --           vim.cmd.ObsidianNew(vim.trim(result))
+  --         end
+  --       end)
+  --     end
+
+  --     map
+  --       :prefix("<leader>n")
+  --       :set("c", new_note)
+  --       :set("f", vim.cmd.ObsidianQuickSwitch)
+  --       :set("g", vim.cmd.ObsidianSearch)
+
+  --     require("obsidian").setup({
+  --       dir = "~/obsidian-notes",
+  --       finder = "fzf-lua",
+  --       note_id_func = function(title)
+  --         local suffix = ""
+  --         if title ~= nil then
+  --           suffix = utf8.lower(utf8.gsub(title, " ", "-"))
+  --         else
+  --           for _ = 1, 4 do
+  --             suffix = suffix .. string.char(math.random(65, 90))
+  --           end
+  --         end
+  --         return suffix
+  --       end,
+  --     })
+  --   end,
+  -- },
+  {
+    "toppair/peek.nvim",
+    build = "deno task --quiet build:fast",
+    opts = {
+      app = "browser",
+      theme = "light",
+    },
+  },
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    branch = "v3",
+    config = function()
+      local hooks = require("ibl.hooks")
+      hooks.register(hooks.type.WHITESPACE, hooks.builtin.hide_first_space_indent_level)
+
+      require("ibl").setup({
+        exclude = {
+          filetypes = { "git" },
+        },
+        scope = {
+          enabled = false,
+        },
+      })
+    end,
+  },
+  -- {
+  --   "altermo/ultimate-autopair.nvim",
+  --   branch = "v0.6",
+  --   config = function()
+  --     local big_pairs = {
+  --       { "[", "]" },
+  --       { "{", "}" },
+  --       { "(", ")" },
+  --       { "|", "|" },
+  --       { "'", "'" },
+  --       { '"', '"' },
+  --     }
+
+  --     local big_kinds = { "", "big", "bigg", "Big", "Bigg" }
+
+  --     local tex_pairs = {}
+  --     for _, kind in ipairs(big_kinds) do
+  --       for _, pair in pairs(big_pairs) do
+  --         table.insert(tex_pairs, {
+  --           "\\" .. kind .. pair[1],
+  --           "\\" .. kind .. pair[2],
+  --           disable_end = true,
+  --         })
+  --       end
+  --     end
+
+  --     require("ultimate-autopair").setup({
+  --       multiline = false,
+  --       bs = {
+  --         enable = true,
+  --         overjumps = false,
+  --         space = false,
+  --       },
+  --       space = {
+  --         enable = false,
+  --       },
+  --       tabout = {
+  --         enable = true,
+  --         map = "<A-Tab>",
+  --         hopout = true,
+  --       },
+  --       internal_pairs = {
+  --         { "[", "]", fly = true, dosuround = true, newline = true, space = true },
+  --         { "(", ")", fly = true, dosuround = true, newline = true, space = true },
+  --         { "{", "}", fly = true, dosuround = true, newline = true, space = true },
+  --         { '"', '"', suround = true, multiline = false, alpha = { "txt" } },
+  --         {
+  --           "'",
+  --           "'",
+  --           suround = true,
+  --           cond = function(fn)
+  --             return not fn.in_lisp() or fn.in_string()
+  --           end,
+  --           alpha = true,
+  --           nft = { "tex", "latex" },
+  --           multiline = false,
+  --         },
+  --         { "`", "`", nft = { "tex", "latex" }, multiline = false },
+  --         { "``", "''", ft = { "tex", "latex" } },
+  --         { "<<", ">>", ft = { "tex", "latex" } },
+  --         { "```", "```", newline = true, ft = { "markdown" } },
+  --         { "<!--", "-->", ft = { "markdown", "html" } },
+  --         { '"""', '"""', newline = true, ft = { "python" } },
+  --         { "'''", "'''", newline = true, ft = { "python" } },
+  --         { 'R"json(', ")json" },
+  --         { 'R"sql(', ")sql" },
+  --         unpack(tex_pairs),
+  --       },
+  --     })
+  --   end,
+  -- },
+  {
+    dir = "~/.local/share/nvim/lazy/denote.nvim",
+    dependencies = {
+      "ibhagwan/fzf-lua",
+      "starwing/luautf8",
+    },
+    config = function()
+      local denote = require("denote")
+      map:prefix("<leader>n"):set("c", denote.new_note):set("f", denote.select_note)
+
+      vim.keymap.set("n", "gf", function()
+        if denote.get_link_under_cursor() then
+          return denote.goto_link_under_cursor()
+        else
+          return "gf"
+        end
+      end, { noremap = false })
     end,
   },
 }
